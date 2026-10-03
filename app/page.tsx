@@ -37,14 +37,13 @@ function parseEventDate(dateStr: string) {
 }
 
 export default function Home() {
-  const [events, setEvents] = useState<Event[]>(EVENTS);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     getCollection('gdgoc_events').then((stored: any) => {
       if (stored && stored.length > 0) {
-        setEvents(stored); // db completely replaces seed
+        setEvents(stored);
       }
-      // else keep the default EVENTS from lib/data (set in useState)
     }).catch(() => {});
   }, []);
 

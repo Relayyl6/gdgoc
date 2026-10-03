@@ -294,8 +294,8 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
 
 export default function TeamPage() {
   const [activeFilter, setActiveFilter] = useState<Division>('All');
-  const [leaders, setLeaders] = useState<Leader[]>(LEADERS);
-  const [members, setMembers] = useState<Member[]>(MEMBERS);
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [volunteers, setVolunteers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -324,8 +324,8 @@ export default function TeamPage() {
         }
       });
       
-      if (activeLeaders.length > 0) setLeaders(activeLeaders);
-      if (activeMembers.length > 0) setMembers(activeMembers);
+      setLeaders(activeLeaders);
+      setMembers(activeMembers);
 
       // Load Volunteers
       try {

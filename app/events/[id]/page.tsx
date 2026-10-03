@@ -86,11 +86,11 @@ export default function EventDetailPage({
   useEffect(() => {
     getCollection("gdgoc_events")
       .then((stored) => {
-        const all = stored && stored.length > 0 ? stored : EVENTS;
+        const all = stored && stored.length > 0 ? stored : [];
         setEvent(all.find((e: any) => e.id === params.id) || null);
       })
       .catch((e) => {
-        setEvent(EVENTS.find((e: any) => e.id === params.id) || null);
+        setEvent(null);
       });
   }, [params.id]);
 

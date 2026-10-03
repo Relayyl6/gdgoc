@@ -236,21 +236,18 @@ export default function BlogPage() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
-  const [posts, setPosts] = useState(BLOG_POSTS);
+  const [posts, setPosts] = useState<any[]>([]);
 
   useEffect(() => {
     fetch('/api/admin/verify')
       .then((r) => r.json())
       .then((data) => { if (data.isAdmin) setIsAdmin(true); })
       .catch(() => {});
-    getCollection('gdgoc_blog_posts').then(stored => {
+    
+    getCollection('gdgoc_blog_posts').then((stored) => {
       if (stored && Array.isArray(stored)) {
         const publishedStored = stored.filter((p: any) => p.status === 'published' || !p.status);
-        if (publishedStored.length > 0) {
-          const storedIds = new Set(publishedStored.map((p: any) => p.id));
-          const seedOnly = BLOG_POSTS.filter((p) => !storedIds.has(p.id));
-          setPosts([...publishedStored, ...seedOnly]);
-        }
+        setPosts(publishedStored);
       }
     });
   }, []);

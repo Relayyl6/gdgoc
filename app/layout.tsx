@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   title: "GDGOC UNIBEN | Google Developer Groups on Campus",
   description: "Join the Google Developer Groups on Campus at the University of Benin. Learn, build, and grow with a modern, tech-forward community platform.",
   icons: {
-    icon: "/favicon.ico",
-    apple: "/apple-touch-icon.png",
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
   openGraph: {
     title: "GDGOC UNIBEN",
