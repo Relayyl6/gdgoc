@@ -13,17 +13,26 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-let app: any;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (e) {
-  console.warn('Firebase initialization failed. Check env vars.', e);
-}
-const db = app ? getFirestore(app) : ({} as any);
+let app: any = null;
+let db: any = null;
+let analytics: any = null;
 
-let analytics;
-if (typeof window !== "undefined") {
-  analytics = getAnalytics(app);
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    if (typeof window !== "undefined") {
+      analytics = getAnalytics(app);
+    }
+  } else {
+    console.warn('Firebase env vars missing. Skipping Firebase initialization.');
+  }
+} catch (e) {
+  console.warn('Firebase initialization failed.', e);
 }
+
+// Fallback to dummy objects if uninitialized to avoid null reference crashes in UI components
+if (!app) app = {} as any;
+if (!db) db = {} as any;
 
 export { app, db, analytics };
