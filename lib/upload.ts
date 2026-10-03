@@ -1,22 +1,22 @@
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { app } from './firebase';
+
 /**
- * Uploads a file to Vercel Blob via the /api/upload route.
+ * Uploads a file to Firebase Storage.
  * Returns the public URL of the uploaded file.
  */
 export async function uploadImage(file: File, folder = 'uploads'): Promise<string> {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('folder', folder);
-
-  const res = await fetch('/api/upload', {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Upload failed' }));
-    throw new Error(err.error || 'Upload failed');
+  try {
+    const storage = getStorage(app);
+    const filename = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const storageRef = ref(storage, filename);
+    
+    const snapshot = await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(snapshot.ref);
+    
+    return url;
+  } catch (error: any) {
+    console.error('Firebase storage upload failed:', error);
+    throw new Error(error.message || 'Upload failed');
   }
-
-  const { url } = await res.json();
-  return url;
 }

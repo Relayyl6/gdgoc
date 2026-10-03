@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { EVENTS, type Event } from '@/lib/data';
 import { getCollection, saveCollection } from '@/lib/db';
+import { uploadImage } from '@/lib/upload';
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -138,22 +139,7 @@ export default function EventDetailPage({
     setUploadError('');
 
     try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('folder', 'gdgoc_showcase');
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Upload failed');
-      }
-
-      const imageUrl = data.url;
+      const imageUrl = await uploadImage(selectedFile, 'gdgoc_showcase');
 
       // Map to the MediaItem schema expected by /admin/media
       const newMemory = {
