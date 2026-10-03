@@ -235,7 +235,25 @@ export default function CreateEventPage() {
       image: coverImage || undefined,
     };
     getCollection('gdgoc_events').then((existing: any) => {
-      saveCollection('gdgoc_events', [newEvent, ...(existing || [])]);
+      let eventsList = existing || [];
+      if (featured) {
+        // Enforce max 4 featured events
+        let featuredEvents = eventsList.filter((e: any) => e.featured);
+        if (featuredEvents.length >= 4) {
+          // Sort by date (oldest first) and unfeature the oldest ones until we have room
+          featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          const toUnfeatureCount = featuredEvents.length - 3;
+          const toUnfeatureIds = new Set(featuredEvents.slice(0, toUnfeatureCount).map((e: any) => e.id));
+          
+          eventsList = eventsList.map((e: any) => {
+            if (toUnfeatureIds.has(e.id)) {
+              return { ...e, featured: false };
+            }
+            return e;
+          });
+        }
+      }
+      saveCollection('gdgoc_events', [newEvent, ...eventsList]);
     });
     
     import('@/lib/db').then(({ logActivity }) => {

@@ -190,7 +190,12 @@ export default function EventDetailPage({
   };
 
   if (event === undefined) {
-    return <div className="min-h-screen pt-32 bg-slate-50" />;
+    return (
+      <div className="min-h-screen pt-32 bg-slate-50 flex flex-col items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p className="text-gray-500 font-medium animate-pulse">Exploring our events...</p>
+      </div>
+    );
   }
 
   if (event === null) {

@@ -14,7 +14,7 @@ export default function RegisterPage({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
   const initRole = searchParams?.get('role') as 'speaker' | 'trainee' | null;
 
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<any | null | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<'speaker' | 'trainee'>(initRole || 'trainee');
   const [loading, setLoading] = useState(true);
   

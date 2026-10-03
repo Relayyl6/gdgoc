@@ -4,23 +4,24 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://gdgoc-six.vercel.app"),
   title: "GDGOC UNIBEN | Google Developer Groups on Campus",
   description: "Join the Google Developer Groups on Campus at the University of Benin. Learn, build, and grow with a modern, tech-forward community platform.",
   icons: {
-    icon: "/favicon.ico", // Ensure you have this or use a valid path if logo exists
+    icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
     title: "GDGOC UNIBEN",
     description: "Google Developer Groups on Campus at the University of Benin.",
-    url: "https://gdgoc-uniben.vercel.app",
+    url: "https://gdgoc-six.vercel.app",
     siteName: "GDGOC UNIBEN",
     images: [
       {
-        url: "/og-image.jpg", 
+        url: "/gdgoc-social-share.png", 
         width: 1200,
         height: 630,
-        alt: "GDGOC Logo",
+        alt: "GDGOC Social Share",
       },
     ],
     locale: "en_US",
