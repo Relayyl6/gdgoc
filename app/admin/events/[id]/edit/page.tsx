@@ -240,6 +240,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
     registeredCount: 0,
     coverGradient: 'from-blue-600 to-blue-400',
     isPast: false,
+    featured: false,
     speakers: [] as { name: string; title: string; bio: string }[],
     agenda: [] as { time: string; title: string; type: string }[],
   });
@@ -284,6 +285,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
               registeredCount: foundEvent.registeredCount || 0,
               coverGradient: foundEvent.coverGradient || 'from-blue-600 to-blue-400',
               isPast: Boolean(foundEvent.isPast),
+              featured: Boolean(foundEvent.featured),
               speakers: foundEvent.speakers ? [...foundEvent.speakers] : [],
               agenda: foundEvent.agenda ? [...foundEvent.agenda] : [],
             });
@@ -426,6 +428,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
       registeredCount: Number(form.registeredCount) || 0,
       coverGradient: form.coverGradient || 'from-blue-600 to-blue-400',
       isPast: form.isPast,
+      featured: form.featured,
     };
 
     // Load existing events from DB
@@ -672,6 +675,29 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
                     <span
                       className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
                         form.isOnline ? 'translate-x-5' : 'translate-x-0'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/10">
+                  <div className="flex items-center gap-2.5">
+                    <Sparkles className="w-4 h-4 text-purple-400" />
+                    <div>
+                      <p className="text-sm font-medium text-white">Featured Event</p>
+                      <p className="text-xs text-gray-400">Shows on the homepage</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm((p) => ({ ...p, featured: !p.featured }))}
+                    className={`relative w-11 h-6 rounded-full transition-colors ${
+                      form.featured ? 'bg-purple-600' : 'bg-white/20'
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                        form.featured ? 'translate-x-5' : 'translate-x-0'
                       }`}
                     />
                   </button>
