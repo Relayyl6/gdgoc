@@ -16,6 +16,7 @@ const firebaseConfig = {
 let app: any = null;
 let db: any = null;
 let analytics: any = null;
+let isFirebaseInitialized = false;
 
 try {
   if (firebaseConfig.apiKey && firebaseConfig.projectId) {
@@ -24,6 +25,7 @@ try {
     if (typeof window !== "undefined") {
       analytics = getAnalytics(app);
     }
+    isFirebaseInitialized = true;
   } else {
     console.warn('Firebase env vars missing. Skipping Firebase initialization.');
   }
@@ -35,4 +37,4 @@ try {
 if (!app) app = {} as any;
 if (!db) db = {} as any;
 
-export { app, db, analytics };
+export { app, db, analytics, isFirebaseInitialized };
