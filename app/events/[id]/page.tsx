@@ -642,7 +642,7 @@ export default function EventDetailPage({
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
-                className="relative max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 space-y-5"
+                className="relative max-w-md w-full max-h-[90vh] overflow-y-auto bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-gray-100 space-y-5 scrollbar-hide"
               >
                 <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                   <div className="flex items-center gap-2.5">
@@ -679,16 +679,21 @@ export default function EventDetailPage({
                     <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                       Select Photo
                     </label>
-                    <label className="border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-blue-50/30 transition text-center group">
-                      <Upload className="w-8 h-8 text-gray-400 group-hover:text-blue-600 mb-2 transition" />
-                      <span className="text-xs font-semibold text-gray-700">
-                        {selectedFile
-                          ? selectedFile.name
-                          : "Choose an image file"}
-                      </span>
-                      <span className="text-[10px] text-gray-400 mt-1">
-                        PNG, JPG, WEBP up to 5MB
-                      </span>
+                    <label className={`border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-2xl flex cursor-pointer bg-gray-50 hover:bg-blue-50/30 transition group ${selectedFile ? 'p-3 items-center justify-between' : 'p-6 flex-col items-center justify-center text-center'}`}>
+                      {selectedFile ? (
+                        <>
+                          <span className="text-xs font-semibold text-blue-600 truncate max-w-[200px]">
+                            {selectedFile.name}
+                          </span>
+                          <span className="text-[10px] text-gray-500 font-medium px-2 py-1 bg-gray-200 rounded-md">Change</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 text-gray-400 group-hover:text-blue-600 mb-2 transition" />
+                          <span className="text-xs font-semibold text-gray-700">Choose an image file</span>
+                          <span className="text-[10px] text-gray-400 mt-1">PNG, JPG, WEBP up to 5MB</span>
+                        </>
+                      )}
                       <input
                         type="file"
                         accept="image/*"
