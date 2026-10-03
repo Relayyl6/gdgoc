@@ -24,11 +24,21 @@ export default function ShowcasePage() {
 
   useEffect(() => {
     // Load memories
-    getCollection('gdgoc_media_gallery').then(async (dbMedia) => {
+    getCollection('gdgoc_showcase').then(async (dbMedia) => {
       const allEvents = await getCollection('gdgoc_events') || [];
-      if (dbMedia && Array.isArray(dbMedia) && dbMedia.length > 0) {
+      
+      // Seed fallback if Firebase is unseeded/empty
+      const fallbackData = [
+        { id: 'sc-seed-1', eventId: 'flutter-forward-extended-2026', url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?q=80&w=1200&auto=format&fit=crop', status: 'approved', caption: 'Cross-platform reactive state engines live demonstration on Android & Desktop.', title: 'Flutter Live Build Session' },
+        { id: 'sc-seed-2', eventId: 'cloud-run-serverless-2026', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1200&auto=format&fit=crop', status: 'approved', caption: 'Deploying serverless microservices with real-time autoscaling and Cloud SQL integration.', title: 'Cloud Run Docker Lab' },
+      ];
+
+      const rawMedia = (dbMedia && Array.isArray(dbMedia) && dbMedia.length > 0) ? dbMedia : fallbackData;
+      const approvedMedia = rawMedia.filter((m: any) => m.status === 'approved');
+
+      if (approvedMedia.length > 0) {
         const aspects = ['aspect-[4/3]', 'aspect-[16/10]', 'aspect-[4/5]', 'aspect-[16/11]'];
-        const formatted = dbMedia.map((m: any, idx: number) => {
+        const formatted = approvedMedia.map((m: any, idx: number) => {
           const ev = allEvents.find((e: any) => e.id === m.eventId);
           let cat = 'Community';
           if (ev?.type) {
@@ -57,8 +67,15 @@ export default function ShowcasePage() {
 
     // Load projects
     getCollection('gdgoc_community_projects').then((dbProj) => {
-      if (dbProj) {
+      if (dbProj && dbProj.length > 0) {
         setProjects(dbProj.filter((p: any) => p.status === 'approved'));
+      } else {
+        // Fallback seed projects if empty
+        setProjects([
+          {
+            id: 'proj-1', title: 'Uniben Nav App', description: 'Campus navigation tool.', category: 'Mobile App', team: ['Samuel', 'John'], image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&q=80&w=800', tech: ['Flutter', 'Firebase'], demoUrl: '#', status: 'approved'
+          }
+        ]);
       }
     });
   }, []);
