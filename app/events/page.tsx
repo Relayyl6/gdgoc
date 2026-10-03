@@ -176,7 +176,7 @@ export default function EventsPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
   const [typeFilter, setTypeFilter] = useState('All');
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>(EVENTS);
 
   useEffect(() => {
     getCollection('gdgoc_events').then((stored) => {

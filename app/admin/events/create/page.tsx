@@ -181,6 +181,7 @@ export default function CreateEventPage() {
   const [isOnline, setIsOnline] = useState(false);
   const [allowSpeakers, setAllowSpeakers] = useState(false);
   const [allowTrainees, setAllowTrainees] = useState(false);
+  const [featured, setFeatured] = useState(false);
   const [publishNow, setPublishNow] = useState(true);
   const [coverImage, setCoverImage] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -230,6 +231,7 @@ export default function CreateEventPage() {
       registeredCount: 0,
       coverGradient: 'from-blue-600 to-blue-400',
       isPast: false,
+      featured: featured,
       image: coverImage || undefined,
     };
     getCollection('gdgoc_events').then((existing: any) => {
@@ -499,6 +501,12 @@ export default function CreateEventPage() {
               {/* Settings */}
               <SectionCard title="Event Settings" delay={0.1}>
                 <div className="flex flex-col gap-3">
+                  <Toggle
+                    label="Feature this Event"
+                    description="Show this on the Home page (max 4 recommended)"
+                    value={featured}
+                    onChange={setFeatured}
+                  />
                   <Toggle
                     label="Allow Speakers to Apply"
                     description="Enables a Speaker registration tab on the event page"
