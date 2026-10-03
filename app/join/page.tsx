@@ -34,9 +34,9 @@ interface FormData {
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const steps = [
   { title: 'Sign up on GDG Platform', desc: 'Create your official Google Developer profile and join the UNIBEN chapter.', link: 'https://gdg.community.dev/gdg-on-campus-university-of-benin-benin-nigeria/', actionText: 'Go to Platform' },
-  { title: 'Complete Local Form', desc: 'Fill out our chapter-specific intake form so we know your academic track.', link: '#', actionText: 'Intake Form (Coming Soon)' },
+  { title: 'Explore our Linktree', desc: 'Find all our official channels, resources, and upcoming events in one place.', link: 'https://tr.ee/W662ybKdZx', actionText: 'Explore Linktree' },
   { title: 'Select a Learning Track', desc: 'Choose between Web, Mobile, AI, or UI/UX Design to get specialized resources.', link: '/events', actionText: 'View Tracks / Events' },
-  { title: 'Join the Community', desc: 'Get verified and receive your exclusive invite to our Discord and WhatsApp groups.', link: '#', actionText: 'Join Groups (Post-Registration)' },
+  { title: 'Join the Community', desc: 'Connect with hundreds of student developers, share ideas, and grow together.', link: 'https://chat.whatsapp.com/K8tl5aMMjEa7LqJOdxl2zb', actionText: 'Join WhatsApp Group' },
 ];
 
 const volunteerRoles: VolunteerRole[] = [
@@ -249,10 +249,10 @@ export default function JoinPage() {
             initial={{ opacity: 0, x: 32 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-gray-50 p-10 md:p-16 rounded-[3rem] border border-gray-100 relative overflow-hidden"
+            className="bg-gray-50 p-8 md:p-10 rounded-[2.5rem] border border-gray-100 relative overflow-hidden"
           >
             <h3 className="text-3xl font-bold mb-8">How to Join</h3>
-            <div className="space-y-8 relative">
+            <div className="space-y-6 relative">
               <div className="absolute left-[15px] top-4 bottom-4 w-px bg-gray-200" />
               {steps.map((step, idx) => (
                 <div key={idx} className="flex gap-6 relative z-10">

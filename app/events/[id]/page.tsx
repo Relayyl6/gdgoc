@@ -91,7 +91,7 @@ export default function EventDetailPage({
 
   // Load memories for this event (status === 'approved')
   const loadApprovedMemories = () => {
-    getCollection('gdgoc_showcase').then((parsed) => {
+    getCollection('gdgoc_media_gallery').then((parsed) => {
       if (Array.isArray(parsed)) {
         const approved = parsed.filter(
           (item: any) => item.eventId === params.id && item.status === 'approved'
@@ -125,19 +125,41 @@ export default function EventDetailPage({
   };
 
   // Submit memory for approval
-  const handleMemorySubmit = (e: React.FormEvent) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleMemorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedFile && !previewUrl) {
+    if (!selectedFile) {
       setUploadError('Please select an image file first.');
       return;
     }
 
-    const persistMemory = async (srcString: string) => {
+    setIsUploading(true);
+    setUploadError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('folder', 'gdgoc_showcase');
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      const imageUrl = data.url;
+
       // Map to the MediaItem schema expected by /admin/media
       const newMemory = {
         id: `upload-${Date.now()}`,
-        eventId: params.id, // we still keep this so we know what event it belongs to
-        url: srcString,
+        eventId: params.id,
+        url: imageUrl,
         status: 'pending',
         caption: memoryCaption.trim() || undefined,
         author: uploaderName.trim() || 'Attendee',
@@ -160,7 +182,6 @@ export default function EventDetailPage({
       setPreviewUrl(null);
       setMemoryCaption('');
       setUploaderName('');
-      setUploadError('');
       setIsUploadModalOpen(false);
 
       // Show success notification
@@ -168,20 +189,10 @@ export default function EventDetailPage({
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
-    };
-
-    if (selectedFile) {
-      // Also read as base64 for persistent cross-session storage, fallback to createObjectURL
-      const reader = new FileReader();
-      reader.onload = () => {
-        persistMemory((reader.result as string) || URL.createObjectURL(selectedFile));
-      };
-      reader.onerror = () => {
-        persistMemory(URL.createObjectURL(selectedFile));
-      };
-      reader.readAsDataURL(selectedFile);
-    } else if (previewUrl) {
-      persistMemory(previewUrl);
+    } catch (err: any) {
+      setUploadError(err.message || 'An error occurred during upload');
+    } finally {
+      setIsUploading(false);
     }
   };
 

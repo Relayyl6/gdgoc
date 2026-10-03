@@ -167,8 +167,8 @@ function MemoriesView({ memories, activeCategory, setActiveCategory, setSelected
                 <div className={`relative w-full ${item.aspect} overflow-hidden`}>
                   <div className="absolute inset-0 bg-gray-200 animate-pulse" />
                   <img src={item.image} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
                     <span className="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-white text-[10px] font-bold uppercase tracking-wider mb-2">{item.category}</span>
                     <h3 className="text-white font-bold text-lg leading-snug mb-1">{item.title}</h3>
                     <p className="text-gray-300 text-sm flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /> {item.year}</p>
