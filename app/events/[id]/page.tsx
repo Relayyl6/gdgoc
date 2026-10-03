@@ -86,17 +86,17 @@ export default function EventDetailPage({
   useEffect(() => {
     getCollection("gdgoc_events")
       .then((stored) => {
-        const all = stored && stored.length > 0 ? stored : [];
+        const all = stored && stored.length > 0 ? stored : EVENTS;
         setEvent(all.find((e: any) => e.id === params.id) || null);
       })
       .catch((e) => {
-        setEvent(null);
+        setEvent(EVENTS.find((e: any) => e.id === params.id) || null);
       });
   }, [params.id]);
 
-  // Load memories for this event (status === 'approved')
+  // Load memories for this event
   const loadApprovedMemories = () => {
-    getCollection("gdgoc_media_gallery")
+    getCollection("gdgoc_showcase")
       .then((parsed) => {
         if (Array.isArray(parsed)) {
           const approved = parsed.filter(
