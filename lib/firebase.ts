@@ -19,7 +19,7 @@ try {
 } catch (e) {
   console.warn('Firebase initialization failed. Check env vars.', e);
 }
-const db = app ? getFirestore(app) : null;
+const db = app ? getFirestore(app) : ({} as any);
 
 let analytics;
 if (typeof window !== "undefined") {

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "GDGOC UNIBEN",
     images: [
       {
-        url: "https://developers.google.com/community/gdsc/images/gdsc-social-share.png", 
+        url: "/og-image.jpg", 
         width: 1200,
         height: 630,
         alt: "GDGOC Logo",
