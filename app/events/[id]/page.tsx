@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   Clock,
@@ -19,10 +19,10 @@ import {
   Sparkles,
   Eye,
   AlertCircle,
-} from 'lucide-react';
-import { EVENTS, type Event } from '@/lib/data';
-import { getCollection, saveCollection } from '@/lib/db';
-import { uploadImage } from '@/lib/upload';
+} from "lucide-react";
+import { EVENTS, type Event } from "@/lib/data";
+import { getCollection, saveCollection } from "@/lib/db";
+import { uploadImage } from "@/lib/upload";
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -30,7 +30,7 @@ interface ShowcaseMemory {
   id: string;
   eventId: string;
   src: string;
-  status: 'pending' | 'approved';
+  status: "pending" | "approved";
   title?: string;
   caption?: string;
   uploadedBy?: string;
@@ -40,26 +40,26 @@ interface ShowcaseMemory {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString('en-NG', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+  return new Date(dateStr).toLocaleDateString("en-NG", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 }
 
 const AGENDA_COLORS: Record<string, string> = {
-  info: 'border-blue-400 bg-blue-50 text-blue-700',
-  talk: 'border-purple-400 bg-purple-50 text-purple-700',
-  workshop: 'border-orange-400 bg-orange-50 text-orange-700',
-  qa: 'border-green-400 bg-green-50 text-green-700',
+  info: "border-blue-400 bg-blue-50 text-blue-700",
+  talk: "border-purple-400 bg-purple-50 text-purple-700",
+  workshop: "border-orange-400 bg-orange-50 text-orange-700",
+  qa: "border-green-400 bg-green-50 text-green-700",
 };
 
 const AGENDA_LABELS: Record<string, string> = {
-  info: 'Info',
-  talk: 'Talk',
-  workshop: 'Workshop',
-  qa: 'Q&A',
+  info: "Info",
+  talk: "Talk",
+  workshop: "Workshop",
+  qa: "Q&A",
 };
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -74,34 +74,41 @@ export default function EventDetailPage({
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [memoryCaption, setMemoryCaption] = useState('');
-  const [uploaderName, setUploaderName] = useState('');
-  const [uploadError, setUploadError] = useState('');
+  const [memoryCaption, setMemoryCaption] = useState("");
+  const [uploaderName, setUploaderName] = useState("");
+  const [uploadError, setUploadError] = useState("");
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [selectedMemory, setSelectedMemory] = useState<ShowcaseMemory | null>(null);
+  const [selectedMemory, setSelectedMemory] = useState<ShowcaseMemory | null>(
+    null,
+  );
 
   // Load event data
   useEffect(() => {
-    getCollection('gdgoc_events').then((stored) => {
-      const all = stored && stored.length > 0 ? stored : [];
-      setEvent(all.find((e: any) => e.id === params.id) || null);
-    }).catch((e) => {
-      setEvent(null);
-    });
+    getCollection("gdgoc_events")
+      .then((stored) => {
+        const all = stored && stored.length > 0 ? stored : [];
+        setEvent(all.find((e: any) => e.id === params.id) || null);
+      })
+      .catch((e) => {
+        setEvent(null);
+      });
   }, [params.id]);
 
   // Load memories for this event (status === 'approved')
   const loadApprovedMemories = () => {
-    getCollection('gdgoc_media_gallery').then((parsed) => {
-      if (Array.isArray(parsed)) {
-        const approved = parsed.filter(
-          (item: any) => item.eventId === params.id && item.status === 'approved'
-        );
-        setMemories(approved as ShowcaseMemory[]);
-      }
-    }).catch(e => {
-      console.error('Failed to get gdgoc_showcase', e);
-    });
+    getCollection("gdgoc_media_gallery")
+      .then((parsed) => {
+        if (Array.isArray(parsed)) {
+          const approved = parsed.filter(
+            (item: any) =>
+              item.eventId === params.id && item.status === "approved",
+          );
+          setMemories(approved as ShowcaseMemory[]);
+        }
+      })
+      .catch((e) => {
+        console.error("Failed to get gdgoc_showcase", e);
+      });
   };
 
   useEffect(() => {
@@ -110,12 +117,12 @@ export default function EventDetailPage({
 
   // Handle file select with URL.createObjectURL
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUploadError('');
+    setUploadError("");
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setUploadError('Please select a valid image file (PNG, JPG, WEBP, etc.)');
+    if (!file.type.startsWith("image/")) {
+      setUploadError("Please select a valid image file (PNG, JPG, WEBP, etc.)");
       return;
     }
 
@@ -131,52 +138,52 @@ export default function EventDetailPage({
   const handleMemorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile) {
-      setUploadError('Please select an image file first.');
+      setUploadError("Please select an image file first.");
       return;
     }
 
     setIsUploading(true);
-    setUploadError('');
+    setUploadError("");
 
     try {
-      const imageUrl = await uploadImage(selectedFile, 'gdgoc_showcase');
+      const imageUrl = await uploadImage(selectedFile, "gdgoc_showcase");
 
       // Map to the MediaItem schema expected by /admin/media
       const newMemory = {
         id: `upload-${Date.now()}`,
         eventId: params.id,
         url: imageUrl,
-        status: 'pending',
+        status: "pending",
         caption: memoryCaption.trim() || undefined,
-        author: uploaderName.trim() || 'Attendee',
+        author: uploaderName.trim() || "Attendee",
         uploadedAt: new Date().toISOString(),
       };
 
       let existingItems: any[] = [];
       try {
-        const saved = await getCollection('gdgoc_media_gallery');
+        const saved = await getCollection("gdgoc_media_gallery");
         if (saved) {
           existingItems = saved as any[];
         }
       } catch (err) {}
 
       const updated = [newMemory, ...existingItems];
-      await saveCollection('gdgoc_media_gallery', updated);
+      await saveCollection("gdgoc_media_gallery", updated);
 
       // Reset modal form
       setSelectedFile(null);
       setPreviewUrl(null);
-      setMemoryCaption('');
-      setUploaderName('');
+      setMemoryCaption("");
+      setUploaderName("");
       setIsUploadModalOpen(false);
 
       // Show success notification
-      setSuccessMessage('Your memory has been submitted for approval');
+      setSuccessMessage("Your memory has been submitted for approval");
       setTimeout(() => {
         setSuccessMessage(null);
       }, 5000);
     } catch (err: any) {
-      setUploadError(err.message || 'An error occurred during upload');
+      setUploadError(err.message || "An error occurred during upload");
     } finally {
       setIsUploading(false);
     }
@@ -210,7 +217,6 @@ export default function EventDetailPage({
   return (
     <div className="pt-24 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-
         {/* Back link */}
         <Link
           href="/events"
@@ -223,7 +229,9 @@ export default function EventDetailPage({
         {/* ── Hero Banner ── */}
         <div
           className={`relative overflow-hidden rounded-3xl mb-10 shadow-xl ${
-            !event.image ? `bg-gradient-to-br ${event.coverGradient} p-8 md:p-12` : 'bg-gray-900 flex flex-col md:flex-row'
+            !event.image
+              ? `bg-gradient-to-br ${event.coverGradient} p-8 md:p-12`
+              : "bg-gray-900 flex flex-col md:flex-row"
           }`}
         >
           {event.image ? (
@@ -236,7 +244,7 @@ export default function EventDetailPage({
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
-              
+
               {/* Right Column: Text */}
               <div className="p-8 md:p-12 flex-1 relative flex flex-col justify-center bg-gray-900">
                 <span className="inline-block bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full mb-4 border border-white/20 w-fit">
@@ -297,14 +305,16 @@ export default function EventDetailPage({
 
         {/* ── Body + Sidebar ── */}
         <div className="flex flex-col lg:flex-row gap-8">
-
           {/* Left: main content */}
           <div className="flex-1 min-w-0 space-y-8">
-
             {/* Description */}
             <section className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl p-6 shadow">
-              <h2 className="text-lg font-bold text-gray-800 mb-3">About this Event</h2>
-              <p className="text-gray-600 leading-relaxed">{event.description}</p>
+              <h2 className="text-lg font-bold text-gray-800 mb-3">
+                About this Event
+              </h2>
+              <p className="text-gray-600 leading-relaxed">
+                {event.description}
+              </p>
             </section>
 
             {/* What to Expect */}
@@ -315,7 +325,10 @@ export default function EventDetailPage({
                 </h2>
                 <ul className="space-y-2">
                   {event.whatToExpect.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-gray-700">
+                    <li
+                      key={i}
+                      className="flex items-start gap-3 text-gray-700"
+                    >
                       <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
                       <span>{item}</span>
                     </li>
@@ -332,13 +345,15 @@ export default function EventDetailPage({
                   {event.agenda.map((item, i) => (
                     <div
                       key={i}
-                      className={`flex items-start gap-4 border-l-4 pl-4 py-2 rounded-r-xl ${AGENDA_COLORS[item.type] ?? 'border-gray-300 bg-gray-50 text-gray-700'}`}
+                      className={`flex items-start gap-4 border-l-4 pl-4 py-2 rounded-r-xl ${AGENDA_COLORS[item.type] ?? "border-gray-300 bg-gray-50 text-gray-700"}`}
                     >
                       <div className="flex-shrink-0">
                         <span className="text-xs font-bold uppercase opacity-70">
                           {AGENDA_LABELS[item.type] ?? item.type}
                         </span>
-                        <p className="text-sm font-semibold mt-0.5">{item.time}</p>
+                        <p className="text-sm font-semibold mt-0.5">
+                          {item.time}
+                        </p>
                       </div>
                       <div>
                         <p className="font-medium text-sm">{item.title}</p>
@@ -352,7 +367,9 @@ export default function EventDetailPage({
             {/* Speakers */}
             {event.speakers.length > 0 && (
               <section className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl p-6 shadow">
-                <h2 className="text-lg font-bold text-gray-800 mb-4">Speakers</h2>
+                <h2 className="text-lg font-bold text-gray-800 mb-4">
+                  Speakers
+                </h2>
                 <div className="space-y-4">
                   {event.speakers.map((speaker, i) => (
                     <div key={i} className="flex items-start gap-4">
@@ -360,9 +377,15 @@ export default function EventDetailPage({
                         <Mic className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="font-bold text-gray-800">{speaker.name}</p>
-                        <p className="text-blue-600 text-sm font-medium">{speaker.title}</p>
-                        <p className="text-gray-500 text-sm mt-1">{speaker.bio}</p>
+                        <p className="font-bold text-gray-800">
+                          {speaker.name}
+                        </p>
+                        <p className="text-blue-600 text-sm font-medium">
+                          {speaker.title}
+                        </p>
+                        <p className="text-gray-500 text-sm mt-1">
+                          {speaker.bio}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -382,7 +405,9 @@ export default function EventDetailPage({
                   <span className="font-medium">
                     {event.registeredCount} registered
                   </span>
-                  <span className="text-gray-400">{event.maxAttendees} max</span>
+                  <span className="text-gray-400">
+                    {event.maxAttendees} max
+                  </span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2">
                   <div
@@ -392,8 +417,8 @@ export default function EventDetailPage({
                 </div>
                 <p className="text-xs text-gray-400 mt-1">
                   {remaining > 0
-                    ? `${remaining} seat${remaining !== 1 ? 's' : ''} remaining`
-                    : 'Event is full'}
+                    ? `${remaining} seat${remaining !== 1 ? "s" : ""} remaining`
+                    : "Event is full"}
                 </p>
               </div>
 
@@ -421,19 +446,22 @@ export default function EventDetailPage({
                       onClick={async () => {
                         try {
                           await fetch(`/api/events/click`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ eventId: event.id })
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ eventId: event.id }),
                           });
-                        } catch(e) {}
+                        } catch (e) {}
                         window.location.href = (event as any).bevyLink;
                       }}
-                      className={`block w-full text-center ${event.isOnline && (event as any).meetingLink ? 'bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50' : `bg-gradient-to-r ${event.coverGradient} text-white font-bold hover:opacity-90 shadow`} py-3 rounded-xl transition text-sm`}
+                      className={`block w-full text-center ${event.isOnline && (event as any).meetingLink ? "bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50" : `bg-gradient-to-r ${event.coverGradient} text-white font-bold hover:opacity-90 shadow`} py-3 rounded-xl transition text-sm`}
                     >
                       Register Now
                     </button>
                   ) : (
-                    <button disabled className="block w-full text-center bg-gray-300 text-gray-500 font-semibold py-3 rounded-xl cursor-not-allowed text-sm">
+                    <button
+                      disabled
+                      className="block w-full text-center bg-gray-300 text-gray-500 font-semibold py-3 rounded-xl cursor-not-allowed text-sm"
+                    >
                       Registration Unavailable
                     </button>
                   )}
@@ -524,7 +552,8 @@ export default function EventDetailPage({
                 Moments & Memories
               </h2>
               <p className="text-gray-500 text-sm mt-1">
-                Photos and highlights shared by organizers and attendees from this event.
+                Photos and highlights shared by organizers and attendees from
+                this event.
               </p>
             </div>
 
@@ -556,7 +585,7 @@ export default function EventDetailPage({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                     <span className="text-xs font-bold truncate leading-tight">
-                      {item.title || 'Community Memory'}
+                      {item.title || "Community Memory"}
                     </span>
                     {item.caption && (
                       <span className="text-[11px] text-white/80 line-clamp-1 mt-0.5">
@@ -579,7 +608,8 @@ export default function EventDetailPage({
                 No memories uploaded yet
               </h3>
               <p className="text-gray-500 text-xs max-w-sm mx-auto mb-5">
-                Were you at this event? Share your favorite snapshots with the GDGOC UNIBEN community!
+                Were you at this event? Share your favorite snapshots with the
+                GDGOC UNIBEN community!
               </p>
               <button
                 onClick={() => setIsUploadModalOpen(true)}
@@ -615,7 +645,9 @@ export default function EventDetailPage({
                       <Camera className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900">Upload a Memory</h3>
+                      <h3 className="text-lg font-bold text-gray-900">
+                        Upload a Memory
+                      </h3>
                       <p className="text-xs text-gray-500">
                         Share moments from {event.title}
                       </p>
@@ -645,7 +677,9 @@ export default function EventDetailPage({
                     <label className="border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-blue-50/30 transition text-center group">
                       <Upload className="w-8 h-8 text-gray-400 group-hover:text-blue-600 mb-2 transition" />
                       <span className="text-xs font-semibold text-gray-700">
-                        {selectedFile ? selectedFile.name : 'Choose an image file'}
+                        {selectedFile
+                          ? selectedFile.name
+                          : "Choose an image file"}
                       </span>
                       <span className="text-[10px] text-gray-400 mt-1">
                         PNG, JPG, WEBP up to 5MB
@@ -699,7 +733,8 @@ export default function EventDetailPage({
                   </div>
 
                   <p className="text-[11px] text-gray-500 bg-gray-50 p-2.5 rounded-xl border border-gray-200">
-                    Uploaded photos will be reviewed by GDGOC leads before appearing publicly on the event gallery and showcase.
+                    Uploaded photos will be reviewed by GDGOC leads before
+                    appearing publicly on the event gallery and showcase.
                   </p>
 
                   <div className="flex items-center justify-end gap-3 pt-2">
@@ -742,7 +777,7 @@ export default function EventDetailPage({
                 <div className="relative aspect-video w-full bg-gray-950">
                   <img
                     src={selectedMemory.src}
-                    alt={selectedMemory.title || 'Event Memory'}
+                    alt={selectedMemory.title || "Event Memory"}
                     className="w-full h-full object-contain"
                   />
                   <button
@@ -759,12 +794,14 @@ export default function EventDetailPage({
                     </span>
                     {selectedMemory.createdAt && (
                       <span className="text-xs text-gray-400">
-                        {new Date(selectedMemory.createdAt).toLocaleDateString()}
+                        {new Date(
+                          selectedMemory.createdAt,
+                        ).toLocaleDateString()}
                       </span>
                     )}
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 mb-1">
-                    {selectedMemory.title || 'Event Moment'}
+                    {selectedMemory.title || "Event Moment"}
                   </h3>
                   {selectedMemory.caption && (
                     <p className="text-sm text-gray-600 leading-relaxed mb-4">
@@ -773,15 +810,17 @@ export default function EventDetailPage({
                   )}
                   {selectedMemory.uploadedBy && (
                     <p className="text-xs text-gray-400 border-t border-gray-100 pt-3">
-                      Uploaded by: <span className="text-gray-700 font-medium">{selectedMemory.uploadedBy}</span>
+                      Uploaded by:{" "}
+                      <span className="text-gray-700 font-medium">
+                        {selectedMemory.uploadedBy}
+                      </span>
                     </p>
                   )}
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
     </div>
   );
