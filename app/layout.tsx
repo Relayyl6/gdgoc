@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { EnvWarning } from "@/components/EnvWarning";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,6 +43,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Mono:wght@400;500&display=swap" rel="stylesheet" />
       </head>
       <body className="min-h-full flex flex-col font-sans selection:bg-blue-200">
+        <EnvWarning />
         <Navbar />
         <main className="flex-grow">
           {children}
