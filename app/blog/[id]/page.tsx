@@ -293,31 +293,7 @@ function renderContent(content: string) {
     return (
       <div
         dangerouslySetInnerHTML={{ __html: content }}
-        className="
-          prose-content text-gray-700 leading-relaxed
-          [&_h1]:text-3xl [&_h1]:font-extrabold [&_h1]:text-gray-900 [&_h1]:mt-10 [&_h1]:mb-5
-          [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h2]:mt-10 [&_h2]:mb-4 [&_h2]:border-b [&_h2]:border-gray-100 [&_h2]:pb-2
-          [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-gray-800 [&_h3]:mt-8 [&_h3]:mb-3
-          [&_h4]:text-lg [&_h4]:font-semibold [&_h4]:text-gray-800 [&_h4]:mt-6 [&_h4]:mb-2
-          [&_p]:mb-4 [&_p]:leading-[1.8] [&_p]:text-gray-600
-          [&_div]:leading-[1.8] [&_div]:text-gray-600
-          [&_strong]:font-bold [&_strong]:text-gray-900
-          [&_em]:italic [&_em]:text-gray-600
-          [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:mb-4 [&_ul]:space-y-1
-          [&_ol]:list-decimal [&_ol]:pl-6 [&_ol]:mb-4 [&_ol]:space-y-1
-          [&_li]:text-gray-600 [&_li]:leading-relaxed
-          [&_blockquote]:border-l-4 [&_blockquote]:border-blue-400 [&_blockquote]:pl-5 [&_blockquote]:py-1 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-gray-500 [&_blockquote]:bg-blue-50/50 [&_blockquote]:rounded-r-xl
-          [&_pre]:bg-gray-900 [&_pre]:text-green-300 [&_pre]:p-4 [&_pre]:rounded-xl [&_pre]:overflow-x-auto [&_pre]:my-6 [&_pre]:text-sm [&_pre]:font-mono
-          [&_code]:bg-gray-100 [&_code]:text-pink-600 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono
-          [&_pre_code]:bg-transparent [&_pre_code]:text-green-300 [&_pre_code]:p-0
-          [&_a]:text-blue-600 [&_a]:underline [&_a]:underline-offset-2 [&_a]:hover:text-blue-800
-          [&_hr]:border-gray-200 [&_hr]:my-8
-          [&_img]:rounded-xl [&_img]:my-6 [&_img]:max-w-full
-          [&_table]:w-full [&_table]:border-collapse [&_table]:my-6
-          [&_th]:bg-gray-50 [&_th]:border [&_th]:border-gray-200 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_th]:text-gray-800
-          [&_td]:border [&_td]:border-gray-200 [&_td]:px-4 [&_td]:py-2 [&_td]:text-gray-600
-          [&_br]:block [&_br]:content-[''] [&_br]:my-1
-        "
+        className="prose prose-lg prose-blue max-w-none prose-img:rounded-xl prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-a:text-blue-600 hover:prose-a:text-blue-500"
       />
     );
   }

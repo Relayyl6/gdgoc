@@ -114,7 +114,7 @@ export default function ShowcasePage() {
         {selectedMemory && (
           <motion.div key="memory-modal" exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedMemory(null)} className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm" />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="relative bg-white rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row shadow-2xl z-10 max-h-[90vh]">
+            <motion.div layoutId={`card-${selectedMemory.id}`} className="relative bg-white rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row shadow-2xl z-10 max-h-[90vh]">
               <button onClick={() => setSelectedMemory(null)} className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full text-white transition">
                 <X className="w-5 h-5" />
               </button>
@@ -163,7 +163,7 @@ function MemoriesView({ memories, activeCategory, setActiveCategory, setSelected
         <AnimatePresence>
           {filtered.map((item: any, idx: number) => (
             <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4, delay: idx * 0.05 }} className="break-inside-avoid">
-              <div onClick={() => setSelectedMemory(item)} className="group relative rounded-3xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 bg-white">
+              <motion.div layoutId={`card-${item.id}`} onClick={() => setSelectedMemory(item)} className="group relative rounded-3xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 bg-white">
                 <div className={`relative w-full ${item.aspect} overflow-hidden`}>
                   <div className="absolute inset-0 bg-gray-200 animate-pulse" />
                   <img src={item.image} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -174,7 +174,7 @@ function MemoriesView({ memories, activeCategory, setActiveCategory, setSelected
                     <p className="text-gray-300 text-sm flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /> {item.year}</p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           ))}
         </AnimatePresence>
