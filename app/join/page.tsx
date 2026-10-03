@@ -184,7 +184,7 @@ export default function JoinPage() {
     setSubmitting(true);
     await new Promise((r) => setTimeout(r, 1200));
 
-    // Persist to localStorage so admin panel can manage applications
+    // Persist to Firebase so admin panel can manage applications
     try {
       const existing = (await getCollection('gdgoc_volunteers')) || [];
       const newEntry = {

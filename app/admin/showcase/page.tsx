@@ -173,7 +173,7 @@ export default function AdminShowcasePage() {
 
     setSelectedFile(file);
 
-    // Read file as base64 data URL so it persists permanently in localStorage
+    // Read file as base64 data URL so it persists permanently in database
     const reader = new FileReader();
     reader.onload = () => {
       setImagePreview(reader.result as string);
