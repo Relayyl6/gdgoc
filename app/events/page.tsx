@@ -181,9 +181,9 @@ export default function EventsPage() {
   useEffect(() => {
     getCollection('gdgoc_events').then((stored) => {
       if (stored && stored.length > 0) {
-        setEvents(stored); // localStorage completely replaces seed
+        setEvents(stored);
       }
-      // else keep the default EVENTS from lib/data (set in useState)
+      // else keep the default EVENTS seed from useState
     }).catch(() => {});
   }, []);
 
@@ -192,6 +192,8 @@ export default function EventsPage() {
     scrollRef.current.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' });
   };
 
+  // Match the same logic used on the home page
+  const featuredEvents = events.filter((e) => e.featured && e.status !== 'draft').slice(0, 4);
   const upcoming = events.filter((e) => !e.isPast && e.status !== 'draft');
   const past = events.filter((e) => e.isPast && e.status !== 'draft');
 
@@ -250,9 +252,13 @@ export default function EventsPage() {
             ref={scrollRef}
             className="flex gap-4 overflow-x-auto pb-3 scroll-smooth scrollbar-hide"
           >
-            {events.filter(e => e.featured).slice(0, 4).map((event) => (
-              <SliderCard key={event.id} event={event} />
-            ))}
+            {featuredEvents.length > 0 ? (
+              featuredEvents.map((event) => (
+                <SliderCard key={event.id} event={event} />
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm py-8">No featured events yet. Mark events as featured from the admin panel.</p>
+            )}
           </div>
         </motion.section>
 

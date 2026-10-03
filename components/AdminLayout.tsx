@@ -21,6 +21,7 @@ import {
   Camera,
   Menu,
   X,
+  Database,
 } from 'lucide-react';
 
 export type AdminPage =
@@ -31,7 +32,8 @@ export type AdminPage =
   | 'volunteers'
   | 'media'
   | 'showcase'
-  | 'projects';
+  | 'projects'
+  | 'seed';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -52,6 +54,7 @@ const NAV_ITEMS: {
   { id: 'media', label: 'Media Gallery', href: '/admin/media', icon: Image },
   { id: 'showcase', label: 'Showcase Memories', href: '/admin/showcase', icon: Camera },
   { id: 'projects', label: 'Community Projects', href: '/admin/projects', icon: FileText },
+  { id: 'seed', label: 'Seed Database', href: '/admin/seed', icon: Database },
 ];
 
 export default function AdminLayout({ children, activePage }: AdminLayoutProps) {
