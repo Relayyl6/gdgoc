@@ -359,10 +359,10 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
     let posts = [...BLOG_POSTS];
     getCollection('gdgoc_blog_posts').then((parsed) => {
       if (parsed && Array.isArray(parsed)) {
-        // All published localStorage posts (or those without a status field)
+        // All published database posts (or those without a status field)
         const publishedStored = parsed.filter((p: any) => p.status === 'published' || !p.status);
         const storedIds = new Set(publishedStored.map((p: any) => p.id));
-        // Keep only seed posts whose IDs are NOT overridden in localStorage
+        // Keep only seed posts whose IDs are NOT overridden in database
         const seedOnly = BLOG_POSTS.filter((p) => !storedIds.has(p.id));
         posts = [...publishedStored, ...seedOnly];
       }

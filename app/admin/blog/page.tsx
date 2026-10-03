@@ -117,7 +117,7 @@ export default function AdminBlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>(INITIAL_POSTS);
   const [isVerifying, setIsVerifying] = useState(true);
 
-  // Auth check + load localStorage posts
+  // Auth check + load database posts
   useEffect(() => {
     fetch('/api/admin/verify')
       .then((r) => {
@@ -129,7 +129,7 @@ export default function AdminBlogPage() {
             if (stored && stored.length > 0) {
               setPosts((prev) => {
                 const storedIds = new Set(stored.map((p: any) => p.id));
-                // Keep seed posts that aren't in localStorage, then prepend localStorage posts
+                // Keep seed posts that aren't in database, then prepend database posts
                 const seedOnly = prev.filter((p) => !storedIds.has(p.id));
                 return [...stored, ...seedOnly];
               });
