@@ -295,8 +295,8 @@ export default function EventsPage() {
                 className="space-y-5"
               >
                 {filtered.length === 0 ? (
-                  <p className="text-gray-400 py-10 text-center">
-                    No upcoming events match the selected filter.
+                  <p className="text-gray-500 font-medium py-12 text-center bg-white/40 rounded-3xl border border-white/60">
+                    Exploring our events... <br/><span className="text-sm font-normal mt-2 inline-block">We are currently planning exciting new experiences! Check back soon.</span>
                   </p>
                 ) : (
                   filtered.map((event) => (

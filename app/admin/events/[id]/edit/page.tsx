@@ -452,6 +452,26 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
       }
     }
 
+    if (updatedEvent.featured) {
+      // Enforce max 4 featured events
+      let featuredEvents = updatedList.filter((e: any) => e.featured);
+      if (featuredEvents.length > 4) {
+        // Sort by date (oldest first) and unfeature the oldest ones until we have room
+        featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Do not unfeature the current event we just featured
+        const toUnfeatureCount = featuredEvents.length - 4;
+        const otherFeatured = featuredEvents.filter(e => e.id !== updatedEvent.id);
+        const toUnfeatureIds = new Set(otherFeatured.slice(0, toUnfeatureCount).map((e: any) => e.id));
+        
+        updatedList = updatedList.map((e: any) => {
+          if (toUnfeatureIds.has(e.id)) {
+            return { ...e, featured: false };
+          }
+          return e;
+        });
+      }
+    }
+
     // Persist to DB and redirect
     await saveCollection('gdgoc_events', updatedList);
     router.push('/admin/events');

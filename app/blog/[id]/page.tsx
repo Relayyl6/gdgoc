@@ -351,7 +351,7 @@ function renderContent(content: string) {
 
 export default function BlogPostPage({ params }: { params: { id: string } }) {
   const [mounted, setMounted] = React.useState(false);
-  const [post, setPost] = React.useState<any | null>(null);
+  const [post, setPost] = React.useState<any | null | undefined>(undefined);
   const [allPosts, setAllPosts] = React.useState<any[]>(BLOG_POSTS);
 
   React.useEffect(() => {
@@ -371,7 +371,14 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
     });
   }, [params.id]);
 
-  if (!mounted) return null;
+  if (!mounted || post === undefined) {
+    return (
+      <div className="pt-24 min-h-screen bg-gradient-to-br from-slate-50 to-white flex flex-col items-center justify-center px-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+        <p className="text-gray-500 font-medium animate-pulse">Loading post...</p>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
