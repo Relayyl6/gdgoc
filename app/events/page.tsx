@@ -176,14 +176,13 @@ export default function EventsPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
   const [typeFilter, setTypeFilter] = useState('All');
-  const [events, setEvents] = useState<Event[]>(EVENTS);
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     getCollection('gdgoc_events').then((stored) => {
       if (stored && stored.length > 0) {
         setEvents(stored);
       }
-      // else keep the default EVENTS seed from useState
     }).catch(() => {});
   }, []);
 

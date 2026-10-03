@@ -352,22 +352,19 @@ function renderContent(content: string) {
 export default function BlogPostPage({ params }: { params: { id: string } }) {
   const [mounted, setMounted] = React.useState(false);
   const [post, setPost] = React.useState<any | null | undefined>(undefined);
-  const [allPosts, setAllPosts] = React.useState<any[]>(BLOG_POSTS);
+  const [allPosts, setAllPosts] = React.useState<any[]>([]);
 
   React.useEffect(() => {
     setMounted(true);
-    let posts = [...BLOG_POSTS];
     getCollection('gdgoc_blog_posts').then((parsed) => {
+      let posts: any[] = [];
       if (parsed && Array.isArray(parsed)) {
-        // All published database posts (or those without a status field)
-        const publishedStored = parsed.filter((p: any) => p.status === 'published' || !p.status);
-        const storedIds = new Set(publishedStored.map((p: any) => p.id));
-        // Keep only seed posts whose IDs are NOT overridden in database
-        const seedOnly = BLOG_POSTS.filter((p) => !storedIds.has(p.id));
-        posts = [...publishedStored, ...seedOnly];
+        posts = parsed.filter((p: any) => p.status === 'published' || !p.status);
       }
       setAllPosts(posts);
       setPost(posts.find((p) => p.id === params.id) || null);
+    }).catch(() => {
+      setPost(null);
     });
   }, [params.id]);
 
