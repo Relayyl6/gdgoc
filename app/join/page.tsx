@@ -35,7 +35,7 @@ interface FormData {
 const steps = [
   { title: 'Sign up on GDG Platform', desc: 'Create your official Google Developer profile and join the UNIBEN chapter.', link: 'https://gdg.community.dev/gdg-on-campus-university-of-benin-benin-nigeria/', actionText: 'Go to Platform' },
   { title: 'Explore our Linktree', desc: 'Find all our official channels, resources, and upcoming events in one place.', link: 'https://tr.ee/W662ybKdZx', actionText: 'Explore Linktree' },
-  { title: 'Select a Learning Track', desc: 'Choose between Web, Mobile, AI, or UI/UX Design to get specialized resources.', link: '/events', actionText: 'View Tracks / Events' },
+  { title: 'Explore Our Events', desc: 'Attend our workshops, study jams, hackathons, and conferences to grow your skills.', link: '/events', actionText: 'View Events' },
   { title: 'Join the Community', desc: 'Connect with hundreds of student developers, share ideas, and grow together.', link: 'https://chat.whatsapp.com/K8tl5aMMjEa7LqJOdxl2zb', actionText: 'Join WhatsApp Group' },
 ];
 

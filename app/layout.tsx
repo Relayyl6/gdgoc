@@ -4,8 +4,28 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "GDGOC UNIBEN",
-  description: "Learn, build, and grow with a modern, animated, and tech-forward community platform.",
+  title: "GDGOC UNIBEN | Google Developer Groups on Campus",
+  description: "Join the Google Developer Groups on Campus at the University of Benin. Learn, build, and grow with a modern, tech-forward community platform.",
+  icons: {
+    icon: "/favicon.ico", // Ensure you have this or use a valid path if logo exists
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "GDGOC UNIBEN",
+    description: "Google Developer Groups on Campus at the University of Benin.",
+    url: "https://gdgoc-uniben.vercel.app",
+    siteName: "GDGOC UNIBEN",
+    images: [
+      {
+        url: "https://developers.google.com/community/gdsc/images/gdsc-social-share.png", 
+        width: 1200,
+        height: 630,
+        alt: "GDGOC Logo",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
