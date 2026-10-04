@@ -66,6 +66,7 @@ export default function AdminVolunteersPage() {
 
   const handleDelete = (id: string) => {
     if (!confirm('Delete this application entirely?')) return;
+    deleteDocument('gdgoc_volunteers', id);
     const updated = volunteers.filter(v => v.id !== id);
     setVolunteers(updated);
     saveCollection('gdgoc_volunteers', updated);
