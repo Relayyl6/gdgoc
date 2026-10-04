@@ -13,6 +13,8 @@ import {
   Mic,
   ListOrdered,
   Plus,
+  ArrowUp,
+  ArrowDown,
   Trash2,
   Save,
   CheckCircle2,
@@ -343,7 +345,30 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
 
   // ── Agenda Handlers ─────────────────────────────────────────────────────────
 
-  const addAgendaItem = () => {
+  
+  const moveAgendaItemUp = (index: number) => {
+    if (index === 0) return;
+    setForm(prev => {
+      const newAgenda = [...prev.agenda];
+      const temp = newAgenda[index];
+      newAgenda[index] = newAgenda[index - 1];
+      newAgenda[index - 1] = temp;
+      return { ...prev, agenda: newAgenda };
+    });
+  };
+
+  const moveAgendaItemDown = (index: number) => {
+    if (index === form.agenda.length - 1) return;
+    setForm(prev => {
+      const newAgenda = [...prev.agenda];
+      const temp = newAgenda[index];
+      newAgenda[index] = newAgenda[index + 1];
+      newAgenda[index + 1] = temp;
+      return { ...prev, agenda: newAgenda };
+    });
+  };
+
+const addAgendaItem = () => {
     setForm((prev) => ({
       ...prev,
       agenda: [...prev.agenda, { time: '', title: '', type: 'talk' }],
@@ -422,6 +447,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
           time: a.time.trim(),
           title: a.title.trim(),
           type: a.type,
+          description: a.description?.trim(),
         }))
         .filter((a) => a.title || a.time),
       maxAttendees: Number(form.maxAttendees) || 100,
@@ -993,19 +1019,27 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
                   >
                     {/* Speaker header */}
                     <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <Mic className="w-3.5 h-3.5 text-blue-400" />
-                        Speaker #{index + 1}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => removeSpeaker(index)}
-                        className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 p-1 rounded-md hover:bg-red-500/10 transition"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Remove
-                      </button>
-                    </div>
+                          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <ListOrdered className="w-3.5 h-3.5 text-purple-400" />
+                            Session #{index + 1}
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button type="button" onClick={() => moveAgendaItemUp(index)} disabled={index === 0} className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition" title="Move Up">
+                              <ArrowUp className="w-3.5 h-3.5" />
+                            </button>
+                            <button type="button" onClick={() => moveAgendaItemDown(index)} disabled={index === form.agenda.length - 1} className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition" title="Move Down">
+                              <ArrowDown className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeAgendaItem(index)}
+                              className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 p-1 ml-2 rounded-md hover:bg-red-500/10 transition"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              Remove
+                            </button>
+                          </div>
+                        </div>
 
                     {/* Name & Title */}
                     <div className="grid sm:grid-cols-2 gap-4">
@@ -1168,9 +1202,23 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
                               ))}
                             </select>
                             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                            </div>
+                          </div>
+                          
+                          {/* Rich Text Description */}
+                          <div className="sm:col-span-12 mt-3">
+                            <label className="block text-xs font-medium text-gray-400 mb-1">
+                              Description (Optional)
+                            </label>
+                            <textarea
+                              value={item.description || ''}
+                              onChange={(e) => updateAgendaItem(index, 'description', e.target.value)}
+                              placeholder="Brief description of the session..."
+                              rows={2}
+                              className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
+                            />
                           </div>
                         </div>
-                      </div>
 
                       {/* Preview tag */}
                       <div className="pt-1 flex items-center gap-2">

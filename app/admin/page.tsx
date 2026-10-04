@@ -4,15 +4,26 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   CalendarDays,
-  FileText,
   Users,
   HandHelping,
   TrendingUp,
   Plus,
+  FolderGit2
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
-import { EVENTS, BLOG_POSTS, TEAM_MEMBERS } from '@/lib/data';
+import { EVENTS } from '@/lib/data';
 import { getCollection } from '@/lib/db';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from 'recharts';
 
 // ── Quick actions ─────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
@@ -25,46 +36,67 @@ const QUICK_ACTIONS = [
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState([
     { label: 'Total Events', value: 0, icon: CalendarDays, color: 'text-[#4285F4]', bg: 'bg-[#4285F4]/10', border: 'border-[#4285F4]/20' },
-    { label: 'Blog Posts', value: 0, icon: FileText, color: 'text-[#EA4335]', bg: 'bg-[#EA4335]/10', border: 'border-[#EA4335]/20' },
-    { label: 'Team Members', value: 0, icon: Users, color: 'text-[#34A853]', bg: 'bg-[#34A853]/10', border: 'border-[#34A853]/20' },
-    { label: 'Volunteers', value: 0, icon: HandHelping, color: 'text-[#FBBC05]', bg: 'bg-[#FBBC05]/10', border: 'border-[#FBBC05]/20' },
+    { label: 'Total Attendees', value: 0, icon: Users, color: 'text-[#EA4335]', bg: 'bg-[#EA4335]/10', border: 'border-[#EA4335]/20' },
+    { label: 'Total Volunteers', value: 0, icon: HandHelping, color: 'text-[#34A853]', bg: 'bg-[#34A853]/10', border: 'border-[#34A853]/20' },
+    { label: 'Total Projects', value: 0, icon: FolderGit2, color: 'text-[#FBBC05]', bg: 'bg-[#FBBC05]/10', border: 'border-[#FBBC05]/20' },
   ]);
 
   const [recentActivity, setRecentActivity] = useState<{ text: string; time: string; dot: string; dateObj: Date }[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
     async function fetchData() {
       // 1. Compute Stats
       let totalEvents = EVENTS.length;
-      let totalBlogs = BLOG_POSTS.length;
-      let totalTeam = TEAM_MEMBERS.length;
+      let totalAttendees = 0;
       let totalVolunteers = 0;
+      let totalProjects = 0;
+      let allEvents = [...EVENTS];
 
       try {
         const parsedEvents = await getCollection('gdgoc_events');
-        if (parsedEvents) totalEvents = Math.max(EVENTS.length, parsedEvents.length);
-      } catch (e) {}
+        if (parsedEvents && parsedEvents.length > 0) {
+          totalEvents = parsedEvents.length;
+          allEvents = parsedEvents;
+        }
+      } catch (e) {
+        console.error("Error fetching events:", e);
+      }
 
-      try {
-        const parsedBlogs = await getCollection('gdgoc_blog_posts');
-        if (parsedBlogs) totalBlogs = Math.max(BLOG_POSTS.length, parsedBlogs.length);
-      } catch (e) {}
+      allEvents.forEach(ev => {
+        totalAttendees += (ev.registeredCount || 0);
+      });
 
-      try {
-        const parsedTeam = await getCollection('gdgoc_team');
-        if (parsedTeam) totalTeam = Math.max(TEAM_MEMBERS.length, parsedTeam.length);
-      } catch (e) {}
+      // Prepare chart data (Registrations per event)
+      const cData = allEvents.map(e => ({
+        name: e.title.length > 15 ? e.title.substring(0, 15) + '...' : e.title,
+        registrations: e.registeredCount || 0,
+        fullTitle: e.title
+      }));
+      setChartData(cData);
 
       try {
         const parsedVolunteers = await getCollection('gdgoc_volunteers');
         if (parsedVolunteers) totalVolunteers = parsedVolunteers.length;
-      } catch (e) {}
+      } catch (e) {
+        console.error("Error fetching volunteers:", e);
+      }
+
+      try {
+        let parsedProjects = await getCollection('gdgoc_projects');
+        if (!parsedProjects || parsedProjects.length === 0) {
+          parsedProjects = await getCollection('gdgoc_community_projects');
+        }
+        if (parsedProjects) totalProjects = parsedProjects.length;
+      } catch (e) {
+        console.error("Error fetching projects:", e);
+      }
 
       setStats([
         { label: 'Total Events', value: totalEvents, icon: CalendarDays, color: 'text-[#4285F4]', bg: 'bg-[#4285F4]/10', border: 'border-[#4285F4]/20' },
-        { label: 'Blog Posts', value: totalBlogs, icon: FileText, color: 'text-[#EA4335]', bg: 'bg-[#EA4335]/10', border: 'border-[#EA4335]/20' },
-        { label: 'Team Members', value: totalTeam, icon: Users, color: 'text-[#34A853]', bg: 'bg-[#34A853]/10', border: 'border-[#34A853]/20' },
-        { label: 'Volunteers', value: totalVolunteers, icon: HandHelping, color: 'text-[#FBBC05]', bg: 'bg-[#FBBC05]/10', border: 'border-[#FBBC05]/20' },
+        { label: 'Total Attendees', value: totalAttendees, icon: Users, color: 'text-[#EA4335]', bg: 'bg-[#EA4335]/10', border: 'border-[#EA4335]/20' },
+        { label: 'Total Volunteers', value: totalVolunteers, icon: HandHelping, color: 'text-[#34A853]', bg: 'bg-[#34A853]/10', border: 'border-[#34A853]/20' },
+        { label: 'Total Projects', value: totalProjects, icon: FolderGit2, color: 'text-[#FBBC05]', bg: 'bg-[#FBBC05]/10', border: 'border-[#FBBC05]/20' },
       ]);
 
       // 2. Compute Recent Activity dynamically from gdgoc_activity
@@ -102,7 +134,9 @@ export default function AdminDashboardPage() {
             });
           });
         }
-      } catch(e) {}
+      } catch(e) {
+        console.error("Error fetching activity:", e);
+      }
 
       // Add fallbacks if empty so the dashboard isn't completely bare initially
       if (activities.length === 0) {
@@ -122,9 +156,9 @@ export default function AdminDashboardPage() {
       <div className="p-8 space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-white">Dashboard Analytics</h1>
           <p className="text-white/50 text-sm mt-1">
-            Welcome back — here&apos;s what&apos;s happening with GDGOC UNIBEN.
+            Overview of GDGOC registrations, volunteers, and overall growth.
           </p>
         </div>
 
@@ -133,7 +167,7 @@ export default function AdminDashboardPage() {
           {stats.map(({ label, value, icon: Icon, color, bg, border }) => (
             <div
               key={label}
-              className={`${bg} ${border} border rounded-xl p-5 flex items-center gap-4`}
+              className={`${bg} ${border} border rounded-xl p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02]`}
             >
               <div className={`${bg} ${border} border rounded-lg p-2.5`}>
                 <Icon className={`w-5 h-5 ${color}`} />
@@ -144,6 +178,48 @@ export default function AdminDashboardPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h2 className="text-white font-semibold text-sm mb-4">Event Registrations</h2>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" vertical={false} />
+                  <XAxis dataKey="name" stroke="#ffffff60" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#ffffff60" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip 
+                    cursor={{ fill: '#ffffff10' }}
+                    contentStyle={{ backgroundColor: '#111', border: '1px solid #ffffff20', borderRadius: '8px' }}
+                    labelStyle={{ color: '#fff', marginBottom: '4px' }}
+                    itemStyle={{ color: '#4285F4' }}
+                  />
+                  <Bar dataKey="registrations" fill="#4285F4" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h2 className="text-white font-semibold text-sm mb-4">Growth Over Time</h2>
+            <div className="h-64 w-full flex items-center justify-center border border-white/5 rounded-lg bg-black/20">
+               <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" vertical={false} />
+                  <XAxis dataKey="name" stroke="#ffffff60" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="#ffffff60" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#111', border: '1px solid #ffffff20', borderRadius: '8px' }}
+                    labelStyle={{ color: '#fff', marginBottom: '4px' }}
+                    itemStyle={{ color: '#34A853' }}
+                  />
+                  <Line type="monotone" dataKey="registrations" stroke="#34A853" strokeWidth={3} dot={{ fill: '#34A853', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
         {/* Bottom grid: activity + quick actions */}
@@ -158,8 +234,8 @@ export default function AdminDashboardPage() {
               {recentActivity.length === 0 ? (
                 <li className="text-white/40 text-sm">No recent activity.</li>
               ) : (
-                recentActivity.map(({ text, time, dot }) => (
-                  <li key={text} className="flex items-start gap-3">
+                recentActivity.map(({ text, time, dot }, i) => (
+                  <li key={i} className="flex items-start gap-3">
                     <span className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${dot}`} />
                     <div>
                       <p className="text-white/80 text-sm">{text}</p>

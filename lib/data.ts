@@ -16,7 +16,7 @@ export interface Event {
   description: string;
   whatToExpect: string[];
   speakers: { name: string; title: string; bio: string }[];
-  agenda: { time: string; title: string; type: string }[];
+  agenda: { time: string; title: string; type: string; description?: string }[];
   maxAttendees: number;
   registeredCount: number;
   coverGradient: string;

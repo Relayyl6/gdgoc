@@ -349,21 +349,24 @@ export default function EventDetailPage({
                 <div className="space-y-3">
                   {event.agenda.map((item, i) => (
                     <div
-                      key={i}
-                      className={`flex items-start gap-4 border-l-4 pl-4 py-2 rounded-r-xl ${AGENDA_COLORS[item.type] ?? "border-gray-300 bg-gray-50 text-gray-700"}`}
-                    >
-                      <div className="flex-shrink-0">
-                        <span className="text-xs font-bold uppercase opacity-70">
-                          {AGENDA_LABELS[item.type] ?? item.type}
-                        </span>
-                        <p className="text-sm font-semibold mt-0.5">
-                          {item.time}
-                        </p>
+                        key={i}
+                        className={`flex items-start gap-4 border-l-4 pl-4 py-2 rounded-r-xl ${AGENDA_COLORS[item.type] ?? "border-gray-300 bg-gray-50 text-gray-700"}`}
+                      >
+                        <div className="flex-shrink-0 w-24">
+                          <span className="text-[10px] font-bold uppercase opacity-70 tracking-wider">
+                            {AGENDA_LABELS[item.type] ?? item.type}
+                          </span>
+                          <p className="text-sm font-semibold mt-0.5">
+                            {item.time}
+                          </p>
+                        </div>
+                        <div className="flex-1 pb-1">
+                          <p className="font-bold text-sm mb-0.5">{item.title}</p>
+                          {(item as any).description && (
+                            <p className="text-xs opacity-80 leading-relaxed pr-2 whitespace-pre-wrap">{(item as any).description}</p>
+                          )}
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-sm">{item.title}</p>
-                      </div>
-                    </div>
                   ))}
                 </div>
               </section>
