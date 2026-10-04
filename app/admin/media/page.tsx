@@ -109,19 +109,29 @@ export default function AdminMediaPage() {
       createdAt: itemToApprove.uploadedAt,
     };
 
+    // OPTIMISTIC UPDATE: Remove from UI instantly
+    setMedia(prev => {
+      const next = prev.filter(m => m.id !== id);
+      saveMedia(next);
+      return next;
+    });
+
     // Save to gdgoc_showcase
     try {
       const existingShowcase = await getCollection('gdgoc_showcase') || [];
       await saveCollection('gdgoc_showcase', [newShowcaseItem, ...existingShowcase]);
-    } catch (e) {}
-
-    // Remove from gdgoc_media_gallery queue
-    persist(media.filter((m) => m.id !== id));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleDelete = (id: string) => {
     if (!confirm('Delete this photo?')) return;
-    persist(media.filter((m) => m.id !== id));
+    setMedia(prev => {
+      const next = prev.filter(m => m.id !== id);
+      saveMedia(next);
+      return next;
+    });
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,7 +149,11 @@ export default function AdminMediaPage() {
         status: 'approved', // admin uploads are auto-approved
         uploadedAt: new Date().toISOString().slice(0, 10),
       };
-      persist([newItem, ...media]);
+      setMedia(prev => {
+        const next = [newItem, ...prev];
+        saveMedia(next);
+        return next;
+      });
       setUploaderName('');
       setUploaderCaption('');
       if (fileRef.current) fileRef.current.value = '';
