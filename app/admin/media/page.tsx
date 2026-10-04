@@ -110,6 +110,7 @@ export default function AdminMediaPage() {
     };
 
     // OPTIMISTIC UPDATE: Remove from UI instantly
+    deleteDocument('gdgoc_media_gallery', id);
     setMedia(prev => {
       const next = prev.filter(m => m.id !== id);
       saveMedia(next);
@@ -127,6 +128,7 @@ export default function AdminMediaPage() {
 
   const handleDelete = (id: string) => {
     if (!confirm('Delete this photo?')) return;
+    deleteDocument('gdgoc_media_gallery', id);
     setMedia(prev => {
       const next = prev.filter(m => m.id !== id);
       saveMedia(next);

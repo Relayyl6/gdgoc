@@ -182,6 +182,7 @@ export default function AdminEventsPage() {
 
   function handleDelete(id: string) {
     if (!confirm('Delete this event? This action cannot be undone.')) return;
+    deleteDocument('gdgoc_events', id);
     saveEvents((prev) => prev.filter((e) => e.id !== id));
   }
 

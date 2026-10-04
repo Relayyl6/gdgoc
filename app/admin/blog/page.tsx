@@ -152,6 +152,7 @@ export default function AdminBlogPage() {
 
   async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this post?')) return;
+    deleteDocument('gdgoc_blog_posts', id);
     const next = posts.filter((p) => p.id !== id);
     setPosts(next);
     await saveCollection('gdgoc_blog_posts', next);

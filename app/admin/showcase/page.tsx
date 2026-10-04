@@ -154,6 +154,7 @@ export default function AdminShowcasePage() {
 
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to permanently delete this approved memory?')) {
+      deleteDocument('gdgoc_showcase', id);
       const updated = items.filter((item) => item.id !== id);
       saveToStorage(updated);
       showToast('Image deleted from showcase.');

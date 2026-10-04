@@ -284,6 +284,7 @@ export default function AdminTeamPage() {
   };
 
   const handleRemove = (id: string) => {
+    deleteDocument('gdgoc_team_members', id);
     const member = members.find(m => m.id === id);
     saveMembers((prev) => prev.filter((m) => m.id !== id));
     if (member) {
