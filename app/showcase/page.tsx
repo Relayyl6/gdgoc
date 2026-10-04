@@ -43,14 +43,14 @@ export default function ShowcasePage() {
           }
           return {
             id: m.id || `sc-${idx}`,
-            title: m.caption || m.title || ev?.title || 'Community Photo',
+            title: m.caption || ev?.title || 'Community Memory',
             category: cat,
             date: ev?.date ? new Date(ev.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : (m.uploadedAt || 'Recent'),
             year: ev?.date ? new Date(ev.date).getFullYear().toString() : '2026',
             attendees: ev?.registeredCount || 50,
             location: ev?.location || 'UNIBEN',
             image: m.url || m.src || '',
-            caption: m.caption || ev?.description || 'A vibrant moment captured at GDGOC UNIBEN.',
+            caption: m.author ? `Contributed by ${m.author}.` : (ev?.description || 'A vibrant moment captured at GDGOC UNIBEN.'),
             eventTitle: ev?.title || 'GDGOC UNIBEN Event',
               highlightStat: m.highlightStat || 'Community Vibe',
             aspect: m.aspect || aspects[idx % aspects.length],
