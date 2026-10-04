@@ -67,6 +67,18 @@ export default function ShowcasePage() {
     });
   }, []);
 
+  
+  const handleUpvote = async (projectId: string) => {
+    // Optimistic UI
+    const currentProj = projects.find(p => p.id === projectId);
+    if (!currentProj) return;
+    const newUpvotes = (currentProj.upvotes || 0) + 1;
+    setProjects(projects.map(p => p.id === projectId ? { ...p, upvotes: newUpvotes } : p));
+    
+    // Save to DB
+    await saveDocument('gdgoc_community_projects', projectId, { ...currentProj, upvotes: newUpvotes });
+  };
+
   return (
     <div className="pt-16 min-h-screen bg-slate-50">
       
@@ -109,7 +121,7 @@ export default function ShowcasePage() {
         {activeTab === 'memories' ? (
           <MemoriesView memories={memories} activeCategory={activeCategory} setActiveCategory={setActiveCategory} setSelectedMemory={setSelectedMemory} />
         ) : (
-          <ProjectsView projects={projects} />
+          <ProjectsView projects={projects} handleUpvote={handleUpvote} />
         )}
       </div>
 
@@ -187,7 +199,7 @@ function MemoriesView({ memories, activeCategory, setActiveCategory, setSelected
   );
 }
 
-function ProjectsView({ projects }: { projects: any[] }) {
+function ProjectsView({ projects, handleUpvote }: { projects: any[], handleUpvote?: (id: string) => void }) {
   if (projects.length === 0) {
     return (
       <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
@@ -221,6 +233,9 @@ function ProjectsView({ projects }: { projects: any[] }) {
                 By {Array.isArray(project.contributors) ? project.contributors.join(', ') : project.contributors}
               </div>
               <div className="flex gap-2 shrink-0">
+                  <button onClick={() => handleUpvote && handleUpvote(project.id)} className="flex items-center gap-1.5 p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition px-3 font-semibold text-xs border border-red-100 hover:border-red-200">
+                    <Heart className="w-4 h-4 fill-current" /> {project.upvotes || 0}
+                  </button>
                 {project.githubLink && (
                   <a href={project.githubLink} target="_blank" className="p-2 bg-gray-50 text-gray-700 rounded-full hover:bg-gray-100 transition"><Code className="w-4 h-4" /></a>
                 )}
