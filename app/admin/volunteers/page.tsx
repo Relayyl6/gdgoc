@@ -53,23 +53,29 @@ export default function AdminVolunteersPage() {
   }, []);
 
   const handleApprove = (id: string) => {
-    const updated = volunteers.map(v => v.id === id ? { ...v, status: 'Reviewed - Approved' } : v);
-    setVolunteers(updated);
-    saveCollection('gdgoc_volunteers', updated);
+    setVolunteers(prev => {
+      const updated = prev.map(v => v.id === id ? { ...v, status: 'Reviewed - Approved' } : v);
+      saveCollection('gdgoc_volunteers', updated);
+      return updated;
+    });
   };
 
   const handleReject = (id: string) => {
-    const updated = volunteers.map(v => v.id === id ? { ...v, status: 'Reviewed - Rejected' } : v);
-    setVolunteers(updated);
-    saveCollection('gdgoc_volunteers', updated);
+    setVolunteers(prev => {
+      const updated = prev.map(v => v.id === id ? { ...v, status: 'Reviewed - Rejected' } : v);
+      saveCollection('gdgoc_volunteers', updated);
+      return updated;
+    });
   };
 
   const handleDelete = (id: string) => {
     if (!confirm('Delete this application entirely?')) return;
     deleteDocument('gdgoc_volunteers', id);
-    const updated = volunteers.filter(v => v.id !== id);
-    setVolunteers(updated);
-    saveCollection('gdgoc_volunteers', updated);
+    setVolunteers(prev => {
+      const updated = prev.filter(v => v.id !== id);
+      saveCollection('gdgoc_volunteers', updated);
+      return updated;
+    });
   };
 
   return (
