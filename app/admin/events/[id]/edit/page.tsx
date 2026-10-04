@@ -244,7 +244,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
     isPast: false,
     featured: false,
     speakers: [] as { name: string; title: string; bio: string }[],
-    agenda: [] as { time: string; title: string; type: string }[],
+    agenda: [] as { time: string; title: string; type: string; description?: string }[],
   });
 
   // Verify Admin & Load Event
@@ -377,7 +377,7 @@ const addAgendaItem = () => {
 
   const updateAgendaItem = (
     index: number,
-    field: 'time' | 'title' | 'type',
+    field: 'time' | 'title' | 'type' | 'description',
     value: string,
   ) => {
     setForm((prev) => {
