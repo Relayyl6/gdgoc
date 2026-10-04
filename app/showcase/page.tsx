@@ -51,7 +51,8 @@ export default function ShowcasePage() {
             location: ev?.location || 'UNIBEN',
             image: m.url || m.src || '',
             caption: m.caption || ev?.description || 'A vibrant moment captured at GDGOC UNIBEN.',
-            highlightStat: m.highlightStat || 'Community Vibe',
+            eventTitle: ev?.title || 'GDGOC UNIBEN Event',
+              highlightStat: m.highlightStat || 'Community Vibe',
             aspect: m.aspect || aspects[idx % aspects.length],
           };
         });
@@ -145,7 +146,7 @@ export default function ShowcasePage() {
                   <div className="flex items-center gap-3 text-sm text-gray-600"><Calendar className="w-4 h-4 text-blue-500" /> <span>{selectedMemory.date}</span></div>
                   <div className="flex items-center gap-3 text-sm text-gray-600"><MapPin className="w-4 h-4 text-blue-500" /> <span>{selectedMemory.location}</span></div>
                   <div className="flex items-center gap-3 text-sm text-gray-600"><Users className="w-4 h-4 text-blue-500" /> <span>{selectedMemory.attendees} Attendees</span></div>
-                  <div className="flex items-center gap-3 text-sm text-gray-600"><Award className="w-4 h-4 text-blue-500" /> <span className="font-semibold text-gray-900">{selectedMemory.highlightStat}</span></div>
+                  <div className="flex items-start gap-3 text-sm text-gray-600"><Sparkles className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /> <span className="font-semibold text-gray-900">{selectedMemory.eventTitle}</span></div>
                 </div>
               </div>
             </motion.div>
