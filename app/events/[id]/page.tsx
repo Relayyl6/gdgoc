@@ -580,7 +580,7 @@ export default function EventDetailPage({
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {memories.map((item) => (
                 <motion.div
-                  layoutId={`event-memory-${item.id}`}
+                  
                   key={item.id}
                   whileHover={{ y: -4 }}
                   onClick={() => setSelectedMemory(item)}
@@ -592,7 +592,7 @@ export default function EventDetailPage({
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                     <span className="text-xs font-bold truncate leading-tight">
                       {item.title || "Community Memory"}
                     </span>
@@ -789,7 +789,7 @@ export default function EventDetailPage({
               className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
             >
               <motion.div
-                layoutId={`event-memory-${selectedMemory.id}`}
+                
                 onClick={(e) => e.stopPropagation()}
                 className="relative max-w-2xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col"
               >

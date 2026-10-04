@@ -130,7 +130,7 @@ export default function ShowcasePage() {
         {selectedMemory && (
           <motion.div key="memory-modal" exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedMemory(null)} className="absolute inset-0 bg-gray-900/80 backdrop-blur-sm" />
-            <motion.div layoutId={`card-${selectedMemory.id}`} className="relative bg-white rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row shadow-2xl z-10 max-h-[90vh]">
+            <motion.div  className="relative bg-white rounded-3xl overflow-hidden max-w-4xl w-full flex flex-col md:flex-row shadow-2xl z-10 max-h-[90vh]">
               <button onClick={() => setSelectedMemory(null)} className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 backdrop-blur-md rounded-full text-white transition">
                 <X className="w-5 h-5" />
               </button>
@@ -179,12 +179,12 @@ function MemoriesView({ memories, activeCategory, setActiveCategory, setSelected
         <AnimatePresence>
           {filtered.map((item: any, idx: number) => (
             <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4, delay: idx * 0.05 }} className="break-inside-avoid">
-              <motion.div layoutId={`card-${item.id}`} onClick={() => setSelectedMemory(item)} className="group relative rounded-3xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 bg-white">
+              <motion.div  onClick={() => setSelectedMemory(item)} className="group relative rounded-3xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 bg-white">
                 <div className={`relative w-full ${item.aspect} overflow-hidden`}>
                   <div className="absolute inset-0 bg-gray-200 animate-pulse" />
                   <img src={item.image} alt={item.title} loading="lazy" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-x-0 bottom-0 p-6 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <span className="inline-block px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-lg text-white text-[10px] font-bold uppercase tracking-wider mb-2">{item.category}</span>
                     <h3 className="text-white font-bold text-lg leading-snug mb-1">{item.title}</h3>
                     <p className="text-gray-300 text-sm flex items-center gap-2"><Calendar className="w-3.5 h-3.5" /> {item.year}</p>

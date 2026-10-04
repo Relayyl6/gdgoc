@@ -54,7 +54,7 @@ const NAV_ITEMS: {
   { id: 'media', label: 'Media Gallery', href: '/admin/media', icon: Image },
   { id: 'showcase', label: 'Showcase Memories', href: '/admin/showcase', icon: Camera },
   { id: 'projects', label: 'Community Projects', href: '/admin/projects', icon: FileText },
-  { id: 'seed', label: 'Seed Database', href: '/admin/seed', icon: Database },
+  
 ];
 
 export default function AdminLayout({ children, activePage }: AdminLayoutProps) {
