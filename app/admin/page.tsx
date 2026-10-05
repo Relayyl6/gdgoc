@@ -11,7 +11,7 @@ import {
   FolderGit2
 } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
-import { EVENTS } from '@/lib/data';
+
 import { getCollection } from '@/lib/db';
 import {
   BarChart,
@@ -47,11 +47,11 @@ export default function AdminDashboardPage() {
   useEffect(() => {
     async function fetchData() {
       // 1. Compute Stats
-      let totalEvents = EVENTS.length;
+      let totalEvents = 0;
       let totalAttendees = 0;
       let totalVolunteers = 0;
       let totalProjects = 0;
-      let allEvents = [...EVENTS];
+      let allEvents: any[] = [];
 
       try {
         const parsedEvents = await getCollection('gdgoc_events');

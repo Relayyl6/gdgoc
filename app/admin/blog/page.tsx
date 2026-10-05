@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import AdminLayout from '@/components/AdminLayout';
 import { Plus, Edit2, Trash2, FileText, Tag, Clock } from 'lucide-react';
-import { getCollection, saveCollection } from '@/lib/db';
+import { getCollection, saveCollection, deleteDocument } from '@/lib/db';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Frontend: 'bg-blue-100 text-blue-700',
@@ -152,7 +152,7 @@ export default function AdminBlogPage() {
 
   async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this post?')) return;
-    deleteDocument('gdgoc_blog_posts', id);
+    await deleteDocument('gdgoc_blog_posts', id);
     const next = posts.filter((p) => p.id !== id);
     setPosts(next);
     await saveCollection('gdgoc_blog_posts', next);

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Code2, Users, CalendarDays, Rocket, ArrowRight, MapPin, Clock, Sparkles } from 'lucide-react';
-import { EVENTS, type Event } from '@/lib/data';
+import { type Event  } from '@/lib/data';
 import { getCollection } from '@/lib/db';
 
 /* ─── GDG 4-square logo (reusable) ──────────────────────────────────────── */
@@ -32,7 +32,9 @@ function parseEventDate(dateStr: string) {
       const month = d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
       return { month, day: String(day).padStart(2, '0') };
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('Action failed:', e);
+  }
   return { month: 'OCT', day: '21' };
 }
 
@@ -44,7 +46,9 @@ export default function Home() {
       if (stored && stored.length > 0) {
         setEvents(stored);
       }
-    }).catch(() => {});
+    }).catch((e) => {
+      console.error('Action failed:', e);
+    });
   }, []);
 
   const featuredEvents = events.filter((e) => e.featured && e.status !== 'draft').slice(0, 4);
@@ -410,9 +414,9 @@ export default function Home() {
                           )}
                         </div>
                         <div className="flex items-center gap-3 mt-1 text-gray-500 text-sm">
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 min-w-0">
                             <MapPin size={12} className="shrink-0" />
-                            <span className="truncate">{ev.location}</span>
+                            <span className="truncate min-w-0">{ev.location}</span>
                           </span>
                           <span className="flex items-center gap-1 shrink-0">
                             <Clock size={12} />

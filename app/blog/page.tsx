@@ -6,69 +6,6 @@ import { getCollection, saveCollection, saveDocument, deleteDocument } from '@/l
 import { motion } from 'framer-motion';
 import { Search, ArrowRight, Calendar, Clock, PenLine } from 'lucide-react';
 
-const BLOG_POSTS = [
-  {
-    id: 'getting-started-gemini-api',
-    title: 'Getting Started with the Gemini API in Next.js',
-    excerpt: "A step-by-step guide to integrating Google's Gemini API into your Next.js 14 app using the App Router.",
-    category: 'Frontend',
-    author: 'Chidi Okonkwo',
-    authorRole: 'Technical Lead',
-    date: '2026-09-28',
-    readTime: '8 min read',
-  },
-  {
-    id: 'android-jetpack-compose-intro',
-    title: 'Building Beautiful UIs with Jetpack Compose',
-    excerpt: 'Jetpack Compose is the modern toolkit for building native Android UIs. Here is how we used it for our Solution Challenge project.',
-    category: 'Android',
-    author: 'Ngozi Eze',
-    authorRole: 'Android Developer',
-    date: '2026-09-20',
-    readTime: '6 min read',
-  },
-  {
-    id: 'ai-ml-study-jam-recap',
-    title: 'AI/ML Study Jam Recap: What We Learned',
-    excerpt: 'A comprehensive recap of our Google AI Essentials Study Jam, covering key takeaways from 3 weeks of collaborative learning.',
-    category: 'AI',
-    author: 'Emeka Nwachukwu',
-    authorRole: 'Content Lead',
-    date: '2026-09-10',
-    readTime: '5 min read',
-  },
-  {
-    id: 'figma-to-code-workflow',
-    title: 'From Figma to Code: Our Design-Dev Workflow',
-    excerpt: 'How the GDGOC Design Team collaborates with developers to ship polished UIs. Our complete design-to-code process.',
-    category: 'Design',
-    author: 'Adaeze Obi',
-    authorRole: 'Design Lead',
-    date: '2026-08-30',
-    readTime: '7 min read',
-  },
-  {
-    id: 'backend-fastapi-cloud-run',
-    title: 'Deploying FastAPI to Google Cloud Run',
-    excerpt: 'We deployed our Solution Challenge backend using FastAPI and Google Cloud Run. Here is our step-by-step deployment guide.',
-    category: 'Backend',
-    author: 'Praise Ehigie',
-    authorRole: 'Backend Developer',
-    date: '2026-08-15',
-    readTime: '10 min read',
-  },
-  {
-    id: 'devfest-2025-recap',
-    title: 'DevFest UNIBEN 2025: A Year in Review',
-    excerpt: 'Reliving the highlights of our biggest event yet. 400+ attendees, 12 speakers, and a hackathon that produced 3 funded startups.',
-    category: 'Frontend',
-    author: 'Tope Adeyemi',
-    authorRole: 'GDGOC Lead',
-    date: '2026-07-01',
-    readTime: '4 min read',
-  },
-];
-
 const CATEGORIES = ['All', 'Frontend', 'Backend', 'Android', 'AI', 'Design', 'Community'];
 
 const CATEGORY_COLORS: Record<string, string> = {

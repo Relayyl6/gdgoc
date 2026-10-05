@@ -49,7 +49,8 @@ export function verifyAdminToken(token: string): boolean {
     ].filter(Boolean) as string[];
 
     return validEmails.some(email => token === createAdminToken(email));
-  } catch {
+  } catch (e) {
+    console.error('Action failed:', e);
     return false;
   }
 }
