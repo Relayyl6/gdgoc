@@ -97,18 +97,18 @@ export default function ShowcasePage() {
             Explore the vibrant moments from our past events and discover the incredible projects shipped by our student developers and designers.
           </motion.p>
 
-          <div className="flex justify-center items-center gap-4">
-            <div className="flex bg-gray-100 p-1.5 rounded-2xl shadow-inner">
-              <button onClick={() => setActiveTab('memories')} className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === 'memories' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <div className="flex bg-gray-100 p-1.5 rounded-2xl shadow-inner w-full sm:w-auto">
+              <button onClick={() => setActiveTab('memories')} className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === 'memories' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
                 Event Memories
               </button>
-              <button onClick={() => setActiveTab('projects')} className={`px-6 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === 'projects' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
+              <button onClick={() => setActiveTab('projects')} className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 sm:py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 ${activeTab === 'projects' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
                 Community Projects
               </button>
             </div>
             
             {activeTab === 'projects' && (
-              <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-blue-500/20 hover:shadow-xl hover:scale-105 transition-all">
+              <button onClick={() => setShowModal(true)} className="flex items-center justify-center w-full sm:w-auto gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-blue-500/20 hover:shadow-xl hover:scale-105 transition-all">
                 <Upload className="w-4 h-4" />
                 Submit Project
               </button>

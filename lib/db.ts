@@ -61,16 +61,20 @@ export const getCollection = async (collectionName: string): Promise<any[]> => {
 /** Write an entire array to a Firestore collection (batch set — upserts each doc by id). */
 export const saveCollection = async (collectionName: string, data: any[]) => {
   if (!isFirebaseReady()) return;
-  // Firestore batch has a 500-doc limit — chunk if needed
-  const CHUNK = 450;
-  for (let i = 0; i < data.length; i += CHUNK) {
-    const chunk = data.slice(i, i + CHUNK);
-    const batch = writeBatch(db);
-    chunk.forEach(item => {
-      const docRef = doc(db, collectionName, String(item.id || crypto.randomUUID()));
-      batch.set(docRef, item);
-    });
-    await batch.commit();
+  try {
+    // Firestore batch has a 500-doc limit — chunk if needed
+    const CHUNK = 450;
+    for (let i = 0; i < data.length; i += CHUNK) {
+      const chunk = data.slice(i, i + CHUNK);
+      const batch = writeBatch(db);
+      chunk.forEach(item => {
+        const docRef = doc(db, collectionName, String(item.id || crypto.randomUUID()));
+        batch.set(docRef, item);
+      });
+      await batch.commit();
+    }
+  } catch (e) {
+    console.error('Action failed:', e);
   }
 };
 

@@ -8,6 +8,7 @@ import {
   ArrowLeft, CheckCircle, Mic, GraduationCap, Download, Share, QrCode
 } from 'lucide-react';
 import { getCollection } from '@/lib/db';
+
 import html2canvas from 'html2canvas';
 
 export default function RegisterPage({ params }: { params: { id: string } }) {
@@ -27,12 +28,16 @@ export default function RegisterPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     getCollection('gdgoc_events').then((stored) => {
-      if (stored) {
-        const found = stored.find((e: any) => e.id === params.id);
-        if (found) setEvent(found);
-      }
+      const all = stored && stored.length > 0 ? stored : [];
+      const found = all.find((e: any) => e.id === params.id) || null;
+      if (found) setEvent(found);
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch((e) => {
+      console.error('Action failed:', e);
+      const found = null;
+      if (found) setEvent(found);
+      setLoading(false);
+    });
   }, [params.id]);
 
   const handleSubmit = async (e: React.FormEvent) => {

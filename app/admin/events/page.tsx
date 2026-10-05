@@ -20,89 +20,11 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { getCollection, saveCollection, saveDocument, deleteDocument } from '@/lib/db';
-import { EVENTS, type Event } from '@/lib/data';
+import { type Event  } from '@/lib/data';
 
 // ─── Seed Data & Fallbacks ───────────────────────────────────────────────────
 
-const FALLBACK_SEED: Event[] = [
-  ...EVENTS,
-  {
-    id: 'devfest-2026',
-    title: 'DevFest UNIBEN 2026',
-    type: 'Conference',
-    date: '2026-11-05',
-    startTime: '9:00 AM',
-    endTime: '5:00 PM',
-    location: 'UNIBEN Main Auditorium',
-    isOnline: false,
-    description:
-      'Our biggest annual developer festival. 600+ attendees expected, 15+ speakers, workshops, and a massive hackathon.',
-    whatToExpect: ['Keynote sessions', 'Interactive labs', 'Networking opportunities'],
-    speakers: [],
-    agenda: [],
-    registeredCount: 312,
-    maxAttendees: 600,
-    coverGradient: 'from-blue-600 to-blue-400',
-    isPast: false,
-  },
-  {
-    id: 'ai-study-jam-2',
-    title: 'Advanced AI Study Jam',
-    type: 'Workshop',
-    date: '2026-10-18',
-    startTime: '10:00 AM',
-    endTime: '1:00 PM',
-    location: 'Faculty of Engineering, Room 204',
-    isOnline: false,
-    description:
-      'A 3-week deep dive into advanced AI/ML topics including fine-tuning LLMs, computer vision, and responsible AI.',
-    whatToExpect: ['LLM prompt engineering', 'Hands-on model fine-tuning'],
-    speakers: [],
-    agenda: [],
-    registeredCount: 45,
-    maxAttendees: 60,
-    coverGradient: 'from-green-600 to-emerald-400',
-    isPast: false,
-  },
-  {
-    id: 'solution-challenge-kickoff',
-    title: 'Solution Challenge 2027 Kickoff',
-    type: 'Info Session',
-    date: '2026-12-01',
-    startTime: '2:00 PM',
-    endTime: '4:00 PM',
-    location: 'Google Meet (Virtual)',
-    isOnline: true,
-    description:
-      "Learn about Google's Solution Challenge 2027, form teams, and get guidance from our past finalists.",
-    whatToExpect: ['Competition breakdown', 'Ideation workshop', 'Team matchmaking'],
-    speakers: [],
-    agenda: [],
-    registeredCount: 88,
-    maxAttendees: 200,
-    coverGradient: 'from-yellow-500 to-amber-400',
-    isPast: false,
-  },
-  {
-    id: 'cloud-study-jam',
-    title: 'Google Cloud Study Jam',
-    type: 'Workshop',
-    date: '2026-10-28',
-    startTime: '11:00 AM',
-    endTime: '2:00 PM',
-    location: 'ICT Centre, Lab 3',
-    isOnline: false,
-    description:
-      'Hands-on labs on Google Cloud fundamentals — compute, storage, networking, and Cloud Run deployments.',
-    whatToExpect: ['Google Cloud console setup', 'Cloud Run deployment', 'Qwiklabs quests'],
-    speakers: [],
-    agenda: [],
-    registeredCount: 33,
-    maxAttendees: 40,
-    coverGradient: 'from-blue-600 to-cyan-400',
-    isPast: false,
-  },
-];
+
 
 const TYPE_COLORS: Record<string, string> = {
   Conference: 'bg-blue-100 text-blue-700',

@@ -21,7 +21,7 @@ import {
   Eye,
   AlertCircle,
 } from "lucide-react";
-import { EVENTS, type Event } from "@/lib/data";
+import { type Event  } from '@/lib/data';
 import { getCollection, saveCollection } from "@/lib/db";
 import { uploadImage } from "@/lib/upload";
 
@@ -88,9 +88,11 @@ export default function EventDetailPage({
     getCollection("gdgoc_events")
       .then((stored) => {
         const all = stored && stored.length > 0 ? stored : [];
-        setEvent(all.find((e: any) => e.id === params.id) || null);
+        const found = all.find((e: any) => e.id === params.id) || null;
+        setEvent(found);
       })
       .catch((e) => {
+        console.error('Action failed:', e);
         setEvent(null);
       });
   }, [params.id]);
@@ -166,7 +168,9 @@ export default function EventDetailPage({
         if (saved) {
           existingItems = saved as any[];
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error('Action failed:', err);
+      }
 
       const updated = [newMemory, ...existingItems];
       await saveCollection("gdgoc_media_gallery", updated);
@@ -459,7 +463,9 @@ export default function EventDetailPage({
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({ eventId: event.id }),
                           });
-                        } catch (e) {}
+                        } catch (e) {
+                          console.error('Action failed:', e);
+                        }
                         window.location.href = (event as any).bevyLink;
                       }}
                       className={`block w-full text-center ${event.isOnline && (event as any).meetingLink ? "bg-white border border-gray-200 text-gray-700 font-semibold hover:bg-gray-50" : `bg-gradient-to-r ${event.coverGradient} text-white font-bold hover:opacity-90 shadow`} py-3 rounded-xl transition text-sm`}

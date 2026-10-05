@@ -14,7 +14,7 @@ import {
   Plus,
   ArrowRight,
 } from 'lucide-react';
-import { EVENTS, type Event } from '@/lib/data';
+import { type Event  } from '@/lib/data';
 import { getCollection } from '@/lib/db';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -71,7 +71,7 @@ function SliderCard({ event }: { event: Event }) {
           </h3>
         </div>
         <div>
-          <div className="flex items-center gap-1.5 text-white/80 text-xs mb-1">
+          <div className="flex items-center gap-1.5 text-white/80 text-xs mb-1 min-w-0">
             <Calendar className="w-3.5 h-3.5" />
             <span>{formatDate(event.date)}</span>
           </div>
@@ -81,7 +81,7 @@ function SliderCard({ event }: { event: Event }) {
             ) : (
               <MapPin className="w-3.5 h-3.5" />
             )}
-            <span className="truncate">{event.location}</span>
+            <span className="truncate min-w-0">{event.location}</span>
           </div>
           <SeatsBar registered={event.registeredCount} max={event.maxAttendees} />
           <div className="mt-3 flex items-center gap-1 text-white font-semibold text-sm">
@@ -121,7 +121,7 @@ function ListCard({ event, horizontal }: { event: Event; horizontal?: boolean })
           </p>
 
           <div className="mt-3 space-y-1.5">
-            <div className="flex items-center gap-2 text-gray-600 text-xs">
+            <div className="flex items-center gap-2 text-gray-600 text-xs min-w-0">
               <Calendar className="w-3.5 h-3.5 text-gray-400" />
               <span>{formatDate(event.date)}</span>
             </div>
@@ -137,7 +137,7 @@ function ListCard({ event, horizontal }: { event: Event; horizontal?: boolean })
               ) : (
                 <MapPin className="w-3.5 h-3.5 text-gray-400" />
               )}
-              <span className="truncate">{event.location}</span>
+              <span className="truncate min-w-0">{event.location}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600 text-xs">
               <Users className="w-3.5 h-3.5 text-gray-400" />
@@ -183,7 +183,9 @@ export default function EventsPage() {
       if (stored && stored.length > 0) {
         setEvents(stored);
       }
-    }).catch(() => {});
+    }).catch((e) => {
+      console.error('Action failed:', e);
+    });
   }, []);
 
   const scroll = (dir: 'left' | 'right') => {

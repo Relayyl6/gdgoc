@@ -305,7 +305,15 @@ export default function TeamPage() {
       try {
         const savedTeam = await getCollection('gdgoc_team');
         if (savedTeam && savedTeam.length > 0) {
-          allTeam = savedTeam; } } catch (e) { console.error('Failed to load team', e); }
+          allTeam = savedTeam;
+        }
+      } catch (e) {
+        console.error('Action failed:', e);
+      }
+
+      if (allTeam.length === 0) {
+        allTeam = [...LEADERS, ...MEMBERS];
+      }
       
       // Split into leaders and members
       const activeLeaders: Leader[] = [];
@@ -333,7 +341,9 @@ export default function TeamPage() {
         if (parsed) {
           setVolunteers(parsed.filter((v: any) => v.status === 'Reviewed - Approved'));
         }
-      } catch (e) {}
+      } catch (e) {
+        console.error('Action failed:', e);
+      }
     };
     
     loadData();

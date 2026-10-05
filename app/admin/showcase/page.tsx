@@ -21,7 +21,7 @@ import {
   Eye,
   Filter,
 } from 'lucide-react';
-import { EVENTS, type Event } from '@/lib/data';
+import { type Event  } from '@/lib/data';
 import Link from 'next/link';
 
 export interface ShowcaseItem {
@@ -123,12 +123,15 @@ export default function AdminShowcasePage() {
     });
   }, []);
 
-  const saveToStorage = (updatedItems: ShowcaseItem[]) => {
-    setItems(updatedItems);
-    saveCollection(STORAGE_KEY, updatedItems).catch(e => {
-      console.error('Failed to save to db:', e);
+  function saveToStorage(updater: (prev: ShowcaseItem[]) => ShowcaseItem[]): void;
+  function saveToStorage(items: ShowcaseItem[]): void;
+  function saveToStorage(updater: ShowcaseItem[] | ((prev: ShowcaseItem[]) => ShowcaseItem[])) {
+    setItems((prev) => {
+      const updated = typeof updater === 'function' ? updater(prev) : updater;
+      saveCollection(STORAGE_KEY, updated).catch((e) => console.error('Failed to save to db:', e));
+      return updated;
     });
-  };
+  }
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -139,24 +142,21 @@ export default function AdminShowcasePage() {
 
   // Action handlers
   const handleApprove = (id: string) => {
-    const updated = items.map((item) =>
+    saveToStorage((prev: ShowcaseItem[]) => prev.map((item) =>
       item.id === id ? { ...item, status: 'approved' as const } : item
-    );
-    saveToStorage(updated);
+    ));
     showToast('Memory approved and added to Showcase Gallery!');
   };
 
   const handleDiscard = (id: string) => {
-    const updated = items.filter((item) => item.id !== id);
-    saveToStorage(updated);
+    saveToStorage((prev: ShowcaseItem[]) => prev.filter((item) => item.id !== id));
     showToast('Pending memory discarded.');
   };
 
   const handleDelete = (id: string) => {
     if (window.confirm('Are you sure you want to permanently delete this approved memory?')) {
       deleteDocument('gdgoc_showcase', id);
-      const updated = items.filter((item) => item.id !== id);
-      saveToStorage(updated);
+      saveToStorage((prev: ShowcaseItem[]) => prev.filter((item) => item.id !== id));
       showToast('Image deleted from showcase.');
     }
   };
@@ -235,8 +235,7 @@ export default function AdminShowcasePage() {
       createdAt: new Date().toISOString(),
     };
 
-    const updated = [newMemory, ...items];
-    saveToStorage(updated);
+    saveToStorage((prev: ShowcaseItem[]) => [newMemory, ...prev]);
     resetUploadForm();
     setActiveTab('approved');
     showToast('New image directly approved and published to showcase!');

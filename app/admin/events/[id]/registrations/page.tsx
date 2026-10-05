@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowLeft, Users, Download, Loader2, ChevronDown } from 'lucide-react';
 import AdminLayout from '@/components/AdminLayout';
 import { getCollection, saveCollection, saveDocument, deleteDocument } from '@/lib/db';
-import { EVENTS } from '@/lib/data';
+
 
 export default function EventRegistrationsPage({ params }: { params: { id: string } }) {
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -18,8 +18,7 @@ export default function EventRegistrationsPage({ params }: { params: { id: strin
       getCollection('gdgoc_events'),
       getCollection('gdgoc_registrations')
     ]).then(([storedEvents, storedRegs]) => {
-      const eventDetails = (storedEvents || []).find((e: any) => e.id === params.id) 
-                        || EVENTS.find((e) => e.id === params.id);
+      const eventDetails = (storedEvents || []).find((e: any) => e.id === params.id) || null;
       setEvent(eventDetails);
 
       const eventRegs = (storedRegs || []).filter((r: any) => r.eventId === params.id);
