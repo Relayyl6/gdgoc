@@ -13,12 +13,13 @@ const fadeUp = {
   }),
 };
 
-function RevealText({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function RevealText({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-60px' });
   return (
     <motion.div
       ref={ref}
+      className={className}
       variants={fadeUp}
       initial="hidden"
       animate={inView ? 'visible' : 'hidden'}
@@ -142,9 +143,9 @@ ${formData.message}`;
             </p>
           </RevealText>
 
-          <div className="flex flex-col sm:flex-row gap-10 sm:gap-0 sm:divide-x sm:divide-white/10 uppercase text-xs tracking-widest leading-loose">
+          <div className="grid grid-cols-2 sm:flex sm:flex-row gap-y-10 gap-x-4 sm:gap-0 sm:divide-x sm:divide-white/10 uppercase text-xs tracking-widest leading-loose">
             {infoColumns.map((col, colIdx) => (
-              <RevealText key={col.label} delay={colIdx * 0.2 + 0.1}>
+              <RevealText key={col.label} delay={colIdx * 0.2 + 0.1} className={colIdx === 0 ? "col-span-2 sm:col-span-1" : "col-span-1"}>
                 <div className="sm:pr-12 sm:pl-0 first:pl-0 last:pr-0 sm:first:pr-12 sm:last:pl-12 min-w-[11rem]">
                   <h3 className="text-gray-500 mb-5 font-semibold text-[10px] tracking-[0.3em]">
                     {col.label}
