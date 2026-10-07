@@ -234,9 +234,26 @@ export default function CreateEventPage() {
       featured: featured,
       image: coverImage || undefined,
     };
+    
+    if (featured) {
+      const existing = await getCollection('gdgoc_events');
+      let featuredEvents = existing.filter((e: any) => e.featured);
+      if (featuredEvents.length >= 4) {
+        // Sort by date (oldest first)
+        featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        const toUnfeatureCount = featuredEvents.length - 3; // Make room for 1
+        const toUnfeature = featuredEvents.slice(0, toUnfeatureCount);
+        
+        for (const ev of toUnfeature) {
+          await saveDocument('gdgoc_events', ev.id, { ...ev, featured: false });
+        }
+      }
+    }
+
     await saveDocument('gdgoc_events', newEvent.id, newEvent);
     
     import('@/lib/db').then(({ logActivity }) => {
+
       logActivity(`Created new event: ${newEvent.title}`, 'event');
     });
 
