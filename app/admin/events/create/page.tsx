@@ -207,7 +207,7 @@ export default function CreateEventPage() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const newEvent = {
       id: form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now(),
@@ -234,27 +234,7 @@ export default function CreateEventPage() {
       featured: featured,
       image: coverImage || undefined,
     };
-    getCollection('gdgoc_events').then((existing: any) => {
-      let eventsList = existing || [];
-      if (featured) {
-        // Enforce max 4 featured events
-        let featuredEvents = eventsList.filter((e: any) => e.featured);
-        if (featuredEvents.length >= 4) {
-          // Sort by date (oldest first) and unfeature the oldest ones until we have room
-          featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-          const toUnfeatureCount = featuredEvents.length - 3;
-          const toUnfeatureIds = new Set(featuredEvents.slice(0, toUnfeatureCount).map((e: any) => e.id));
-          
-          eventsList = eventsList.map((e: any) => {
-            if (toUnfeatureIds.has(e.id)) {
-              return { ...e, featured: false };
-            }
-            return e;
-          });
-        }
-      }
-      saveCollection('gdgoc_events', [newEvent, ...eventsList]);
-    });
+    await saveDocument('gdgoc_events', newEvent.id, newEvent);
     
     import('@/lib/db').then(({ logActivity }) => {
       logActivity(`Created new event: ${newEvent.title}`, 'event');
