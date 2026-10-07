@@ -69,7 +69,7 @@ export const saveCollection = async (collectionName: string, data: any[]) => {
       const batch = writeBatch(db);
       chunk.forEach(item => {
         const docRef = doc(db, collectionName, String(item.id || crypto.randomUUID()));
-        batch.set(docRef, item);
+        batch.set(docRef, JSON.parse(JSON.stringify(item)));
       });
       await batch.commit();
     }
@@ -82,7 +82,10 @@ export const saveCollection = async (collectionName: string, data: any[]) => {
 export const saveDocument = async (collectionName: string, id: string, data: any) => {
   if (!isFirebaseReady()) return;
   try {
-    await setDoc(doc(db, collectionName, id), data);
+    // Firestore SDK throws synchronous errors if any field is undefined.
+    // JSON.parse(JSON.stringify()) cleanly strips all undefined fields.
+    const cleanData = JSON.parse(JSON.stringify(data));
+    await setDoc(doc(db, collectionName, String(id)), cleanData);
   } catch (e) {
     console.error(`Failed to save document ${id} in ${collectionName}`, e);
   }
