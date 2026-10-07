@@ -322,10 +322,10 @@ export default function CreateEventPage() {
                         value={form.type}
                         onChange={setField('type')}
                       >
-                        <option value="">Select event type</option>
-                        {EVENT_TYPE_OPTIONS.map((t) => (
-                          <option key={t}>{t}</option>
-                        ))}
+                        <option value="" className="bg-zinc-900 text-white">Select event type</option>
+                          {EVENT_TYPE_OPTIONS.map((t) => (
+                            <option key={t} className="bg-zinc-900 text-white">{t}</option>
+                          ))}
                       </select>
                       <ChevronDown className="absolute right-4 top-3.5 w-4 h-4 text-gray-400 pointer-events-none" />
                     </div>
