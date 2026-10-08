@@ -286,7 +286,8 @@ export default function AdminTeamPage() {
   const handleRemove = (id: string) => {
     deleteDocument('gdgoc_team_members', id);
     const member = members.find(m => m.id === id);
-    saveMembers((prev) => prev.filter((m) => m.id !== id));
+    deleteDocument('gdgoc_team', id);
+    setMembers((prev) => prev.filter((m) => m.id !== id));
     if (member) {
       import('@/lib/db').then(({ logActivity }) => logActivity(`Removed team member: ${member.name}`, 'team'));
     }

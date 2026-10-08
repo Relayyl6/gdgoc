@@ -142,8 +142,7 @@ export default function NewBlogPostPage() {
     };
 
     try {
-      const existing = await getCollection('gdgoc_blog_posts') || [];
-      await saveCollection('gdgoc_blog_posts', [newPost, ...existing]);
+      await import('@/lib/db').then((db) => db.saveDocument('gdgoc_blog_posts', newPost.id, newPost));
     } catch {
       // ignore storage errors
     }

@@ -336,87 +336,79 @@ const addAgendaItem = () => {
 
   // ── Submit / Save ───────────────────────────────────────────────────────────
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
 
-    const updatedEvent: Event = {
-      id: eventId,
-      title: form.title.trim(),
-      type: form.type,
-      date: form.date,
-      startTime: form.startTime.trim() || '10:00 AM',
-      endTime: form.endTime.trim() || '1:00 PM',
-      location: form.location.trim(),
-      isOnline: form.isOnline,
-      description: form.description.trim(),
-      whatToExpect: form.whatToExpect.map((s) => s.trim()).filter(Boolean),
-      speakers: form.speakers
-        .map((s) => ({
-          name: s.name.trim(),
-          title: s.title.trim(),
-          bio: s.bio.trim(),
-        }))
-        .filter((s) => s.name || s.title),
-      agenda: form.agenda
-        .map((a) => ({
-          time: a.time.trim(),
-          title: a.title.trim(),
-          type: a.type,
-          description: a.description?.trim(),
-        }))
-        .filter((a) => a.title || a.time),
-      maxAttendees: Number(form.maxAttendees) || 100,
-      registeredCount: Number(form.registeredCount) || 0,
-      coverGradient: form.coverGradient || 'from-blue-600 to-blue-400',
-      isPast: form.isPast,
-      featured: form.featured,
-    };
+    try {
+      // Load existing events from DB
+      let storageEvents = (await getCollection('gdgoc_events')) as any[];
+      if (!storageEvents) storageEvents = [];
 
-    // Load existing events from DB
-    let storageEvents = (await getCollection('gdgoc_events')) as any[];
-    if (!storageEvents) storageEvents = [];
+      const originalEvent = storageEvents.find((ev) => ev.id === eventId) || {};
 
-    const existingIndex = storageEvents.findIndex((ev) => ev.id === eventId);
-    let updatedList: any[];
+      const updatedEvent = {
+        ...originalEvent, // Preserve all un-mapped fields (e.g. image, bevyLink, meetingLink)
+        id: eventId,
+        title: form.title.trim(),
+        type: form.type,
+        date: form.date,
+        startTime: form.startTime.trim() || '10:00 AM',
+        endTime: form.endTime.trim() || '1:00 PM',
+        location: form.location.trim(),
+        isOnline: form.isOnline,
+        description: form.description.trim(),
+        whatToExpect: form.whatToExpect.map((s) => s.trim()).filter(Boolean),
+        speakers: form.speakers
+          .map((s) => ({
+            name: s.name.trim(),
+            title: s.title.trim(),
+            bio: s.bio.trim(),
+          }))
+          .filter((s) => s.name || s.title),
+        agenda: form.agenda
+          .map((a) => ({
+            time: a.time.trim(),
+            title: a.title.trim(),
+            type: a.type,
+            description: a.description?.trim(),
+          }))
+          .filter((a) => a.title || a.time),
+        maxAttendees: Number(form.maxAttendees) || 100,
+        registeredCount: Number(form.registeredCount) || (originalEvent.registeredCount || 0),
+        coverGradient: form.coverGradient || (originalEvent.coverGradient || 'from-blue-600 to-blue-400'),
+        isPast: form.isPast,
+        featured: form.featured,
+      };
 
-    if (existingIndex !== -1) {
-      updatedList = storageEvents.map((ev) => (ev.id === eventId ? updatedEvent : ev));
-    } else {
-      
-      // Update existing or add to list
-      const eventExists = storageEvents.some((ev) => ev.id === eventId);
-      if (eventExists) {
-        updatedList = storageEvents.map((ev) => (ev.id === eventId ? updatedEvent : ev));
-      } else {
-        updatedList = [updatedEvent, ...storageEvents];
-      }
-
-    }
-
-    if (updatedEvent.featured) {
-      // Enforce max 4 featured events
-      let featuredEvents = updatedList.filter((e: any) => e.featured);
-      if (featuredEvents.length > 4) {
-        // Sort by date (oldest first) and unfeature the oldest ones until we have room
-        featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        // Do not unfeature the current event we just featured
-        const toUnfeatureCount = featuredEvents.length - 4;
-        const otherFeatured = featuredEvents.filter(e => e.id !== updatedEvent.id);
-        const toUnfeatureIds = new Set(otherFeatured.slice(0, toUnfeatureCount).map((e: any) => e.id));
-        
-        updatedList = updatedList.map((e: any) => {
-          if (toUnfeatureIds.has(e.id)) {
-            return { ...e, featured: false };
+      if (updatedEvent.featured) {
+        // Enforce max 4 featured events
+        let featuredEvents = storageEvents.filter((e: any) => e.featured && e.id !== eventId);
+        if (featuredEvents.length >= 4) {
+          // Sort by date (oldest first)
+          featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          const toUnfeatureCount = featuredEvents.length - 3;
+          const toUnfeature = featuredEvents.slice(0, toUnfeatureCount);
+          
+          for (const ev of toUnfeature) {
+            await saveDocument('gdgoc_events', ev.id, { ...ev, featured: false });
           }
-          return e;
-        });
+        }
       }
-    }
 
-    // Persist to DB and redirect
-    await saveCollection('gdgoc_events', updatedList);
-    router.push('/admin/events');
+      // Save only this document
+      await saveDocument('gdgoc_events', eventId, updatedEvent);
+      
+      // Also log activity
+      import('@/lib/db').then(({ logActivity }) => {
+        logActivity(`Updated event: ${updatedEvent.title}`, 'event');
+      });
+
+      router.push('/admin/events');
+    } catch (e) {
+      console.error(e);
+      setIsSaving(false);
+    }
   };
 
   // ── Render States ───────────────────────────────────────────────────────────

@@ -141,22 +141,25 @@ export default function AdminShowcasePage() {
   };
 
   // Action handlers
-  const handleApprove = (id: string) => {
-    saveToStorage((prev: ShowcaseItem[]) => prev.map((item) =>
-      item.id === id ? { ...item, status: 'approved' as const } : item
-    ));
-    showToast('Memory approved and added to Showcase Gallery!');
+  const handleApprove = async (id: string) => {
+    const item = items.find(i => i.id === id);
+    if (item) {
+      await saveDocument(STORAGE_KEY, id, { ...item, status: 'approved' });
+      setItems((prev: ShowcaseItem[]) => prev.map((i) => i.id === id ? { ...i, status: 'approved' as const } : i));
+      showToast('Memory approved and added to Showcase Gallery!');
+    }
   };
 
-  const handleDiscard = (id: string) => {
-    saveToStorage((prev: ShowcaseItem[]) => prev.filter((item) => item.id !== id));
+  const handleDiscard = async (id: string) => {
+    await deleteDocument(STORAGE_KEY, id);
+    setItems((prev: ShowcaseItem[]) => prev.filter((item) => item.id !== id));
     showToast('Pending memory discarded.');
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to permanently delete this approved memory?')) {
-      deleteDocument('gdgoc_showcase', id);
-      saveToStorage((prev: ShowcaseItem[]) => prev.filter((item) => item.id !== id));
+      await deleteDocument(STORAGE_KEY, id);
+      setItems((prev: ShowcaseItem[]) => prev.filter((item) => item.id !== id));
       showToast('Image deleted from showcase.');
     }
   };
