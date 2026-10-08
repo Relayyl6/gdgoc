@@ -738,7 +738,33 @@ const addAgendaItem = () => {
             </div>
 
             {/* Live Fill bar */}
-            
+            <div className="mt-4 pt-4 border-t border-white/5">
+              <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+                <span>
+                  Current fill: {form.registeredCount} / {form.maxAttendees} seats
+                </span>
+                <span>
+                  {Math.round(
+                    Math.min(
+                      (form.registeredCount / Math.max(form.maxAttendees, 1)) * 100,
+                      100,
+                    ),
+                  )}
+                  % filled
+                </span>
+              </div>
+              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-blue-500 rounded-full transition-all"
+                  style={{
+                    width: `${Math.min(
+                      (form.registeredCount / Math.max(form.maxAttendees, 1)) * 100,
+                      100,
+                    )}%`,
+                  }}
+                />
+              </div>
+            </div>
           </div>
 
           {/* ── Section 3: Visual Theme & Gradient ── */}

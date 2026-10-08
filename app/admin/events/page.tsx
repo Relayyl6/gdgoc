@@ -188,14 +188,23 @@ export default function AdminEventsPage() {
                           <MapPin className="w-3 h-3" />
                           {ev.location}
                         </span>
-                        
+                        <span className="flex items-center gap-1">
+                          <Users2 className="w-3 h-3" />
+                          {ev.registeredCount} registered
+                        </span>
                       </div>
-                      
+                      <RegistrationBar count={ev.registeredCount} max={ev.maxAttendees} />
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 shrink-0">
-                      
+                      <Link
+                        href={`/admin/events/${ev.id}/registrations`}
+                        className="p-2 rounded-lg text-blue-400 hover:text-white hover:bg-blue-600/20 transition-colors"
+                        title="View Registrations"
+                      >
+                        <Users2 size={18} />
+                      </Link>
                       <Link
                         href={`/admin/events/${ev.id}/edit`}
                         className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"

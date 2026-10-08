@@ -221,7 +221,8 @@ export default function EventDetailPage({
     );
   }
 
-  
+  const pct = Math.min((event.registeredCount / event.maxAttendees) * 100, 100);
+  const remaining = event.maxAttendees - event.registeredCount;
 
   return (
     <div className="pt-24 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">

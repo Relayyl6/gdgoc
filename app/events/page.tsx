@@ -83,7 +83,7 @@ function SliderCard({ event }: { event: Event }) {
             )}
             <span className="truncate min-w-0">{event.location}</span>
           </div>
-          
+          <SeatsBar registered={event.registeredCount} max={event.maxAttendees} />
           <div className="mt-3 flex items-center gap-1 text-white font-semibold text-sm">
             View Details <ArrowRight className="w-4 h-4" />
           </div>
@@ -126,14 +126,256 @@ function ListCard({ event, horizontal }: { event: Event; horizontal?: boolean })
               <span>{formatDate(event.date)}</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600 text-xs">
+              <Clock className="w-3.5 h-3.5 text-gray-400" />
+              <span>
+                {event.startTime} – {event.endTime}
+              </span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-xs">
+              {event.isOnline ? (
+                <Wifi className="w-3.5 h-3.5 text-gray-400" />
+              ) : (
+                <MapPin className="w-3.5 h-3.5 text-gray-400" />
+              )}
+              <span className="truncate min-w-0">{event.location}</span>
+            </div>
+            <div className="flex items-center gap-2 text-gray-600 text-xs">
               <Users className="w-3.5 h-3.5 text-gray-400" />
               <span>
-                {event.maxAttendees} Spots Available
+                {event.registeredCount}/{event.maxAttendees} registered
               </span>
             </div>
           </div>
 
           {/* Seats bar */}
-          
+          <div className="mt-3">
+            <div className="w-full bg-gray-100 rounded-full h-1.5">
+              <div
+                className={`bg-gradient-to-r ${event.coverGradient} rounded-full h-1.5`}
+                style={{
+                  width: `${Math.min((event.registeredCount / event.maxAttendees) * 100, 100)}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="mt-4 flex items-center gap-1 text-blue-600 font-semibold text-sm">
+            View Details <ArrowRight className="w-4 h-4" />
+          </div>
+        </div>
+      </motion.div>
+    </Link>
+  );
+}
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+
+const ALL_TYPES = ['All', 'Workshop', 'Hackathon', 'Speaker Event', 'Study Jam'];
+
+export default function EventsPage() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [tab, setTab] = useState<'upcoming' | 'past'>('upcoming');
+  const [typeFilter, setTypeFilter] = useState('All');
+  const [events, setEvents] = useState<Event[]>([]);
+
+  useEffect(() => {
+    getCollection('gdgoc_events').then((stored) => {
+      if (stored && stored.length > 0) {
+        setEvents(stored);
+      }
+    }).catch((e) => {
+      console.error('Action failed:', e);
+    });
+  }, []);
+
+  const scroll = (dir: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollBy({ left: dir === 'right' ? 320 : -320, behavior: 'smooth' });
+  };
+
+  // Match the same logic used on the home page
+  const featuredEvents = events.filter((e) => e.featured && e.status !== 'draft').slice(0, 4);
+  const upcoming = events.filter((e) => !e.isPast && e.status !== 'draft');
+  const past = events.filter((e) => e.isPast && e.status !== 'draft');
+
+  const filtered = (tab === 'upcoming' ? upcoming : past).filter(
+    (e) => typeFilter === 'All' || e.type === typeFilter
+  );
+
+  return (
+    <div className="pt-24 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+
+        {/* ── Hero ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-12"
+        >
+          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight">
+            Events<span className="text-blue-600">.</span>
+          </h1>
+          <p className="mt-4 text-gray-500 text-lg max-w-xl">
+            Workshops, hackathons, study jams &amp; more — all crafted to level
+            up your developer journey.
+          </p>
+        </motion.div>
+
+        {/* ── Featured Slider ── */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.5 }}
+          className="mb-14"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-800">Featured Events</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={() => scroll('left')}
+                className="p-2 rounded-full bg-white/70 border border-white/50 shadow hover:bg-white transition"
+                aria-label="Scroll left"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-700" />
+              </button>
+              <button
+                onClick={() => scroll('right')}
+                className="p-2 rounded-full bg-white/70 border border-white/50 shadow hover:bg-white transition"
+                aria-label="Scroll right"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-700" />
+              </button>
+            </div>
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="flex gap-4 overflow-x-auto pb-3 scroll-smooth scrollbar-hide"
+          >
+            {featuredEvents.length > 0 ? (
+              featuredEvents.map((event) => (
+                <SliderCard key={event.id} event={event} />
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm py-8">No featured events yet. Mark events as featured from the admin panel.</p>
+            )}
+          </div>
+        </motion.section>
+
+        {/* ── Content + Sidebar ── */}
+        <div className="flex flex-col lg:flex-row gap-8">
+
+          {/* Main column */}
+          <div className="flex-1 min-w-0">
+
+            {/* Tab toggle */}
+            <div className="flex gap-2 mb-6 bg-white/50 backdrop-blur border border-white/40 rounded-xl p-1 w-fit">
+              {(['upcoming', 'past'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                    tab === t
+                      ? 'bg-blue-600 text-white shadow'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  {t === 'upcoming' ? `Upcoming (${upcoming.length})` : `Past (${past.length})`}
+                </button>
+              ))}
+            </div>
+
+            {/* Upcoming list */}
+            {tab === 'upcoming' && (
+              <motion.div
+                key="upcoming"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-5"
+              >
+                {filtered.length === 0 ? (
+                  <p className="text-gray-500 font-medium py-12 text-center bg-white/40 rounded-3xl border border-white/60">
+                    Exploring our events... <br/><span className="text-sm font-normal mt-2 inline-block">We are currently planning exciting new experiences! Check back soon.</span>
+                  </p>
+                ) : (
+                  filtered.map((event) => (
+                    <ListCard key={event.id} event={event} />
+                  ))
+                )}
+              </motion.div>
+            )}
+
+            {/* Past events — horizontal scrollable */}
+            {tab === 'past' && (
+              <motion.div
+                key="past"
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {filtered.length === 0 ? (
+                  <p className="text-gray-400 py-10 text-center">
+                    No past events match the selected filter.
+                  </p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filtered.map((event) => (
+                      <ListCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <motion.aside
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="w-full lg:w-64 flex-shrink-0 space-y-6"
+          >
+            {/* Filter */}
+            <div className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl p-5 shadow">
+              <h3 className="font-bold text-gray-800 mb-3 text-sm uppercase tracking-wider">
+                Filter by Type
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {ALL_TYPES.map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => setTypeFilter(type)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                      typeFilter === type
+                        ? 'bg-blue-600 text-white shadow'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Create Event (admin) */}
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-5 shadow text-white">
+              <h3 className="font-bold text-base mb-1">Organising an Event?</h3>
+              <p className="text-blue-100 text-xs mb-4">
+                Admins can create and manage events on the dashboard.
+              </p>
+              <Link
+                href="/admin/events/create"
+                className="flex items-center gap-2 bg-white text-blue-600 font-semibold text-sm px-4 py-2 rounded-xl hover:bg-blue-50 transition w-full justify-center"
+              >
+                <Plus className="w-4 h-4" />
+                Create Event
+              </Link>
+            </div>
+          </motion.aside>
+        </div>
+      </div>
+    </div>
   );
 }
