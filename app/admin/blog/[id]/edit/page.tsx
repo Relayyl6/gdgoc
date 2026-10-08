@@ -15,7 +15,7 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { getCollection, saveCollection } from '@/lib/db';
+import { getCollection, saveCollection, saveDocument } from '@/lib/db';
 
 // Dynamically import the editor to avoid SSR issues
 const RichTextEditor = dynamic(() => import('@/components/RichTextEditor'), { ssr: false });
@@ -151,14 +151,9 @@ export default function EditBlogPostPage() {
 
     try {
       const existing = await getCollection('gdgoc_blog_posts') || [];
-      const nextPosts = existing.map((p: any) => p.id === postId ? { ...p, ...newPost } : p);
-      
-      // If it somehow wasn't in existing (which is unlikely but possible), add it
-      if (!existing.some((p: any) => p.id === postId)) {
-        nextPosts.unshift(newPost);
-      }
-      
-      await saveCollection('gdgoc_blog_posts', nextPosts);
+      const original = existing.find((p: any) => p.id === postId) || {};
+      const finalPost = { ...original, ...newPost };
+      await saveDocument('gdgoc_blog_posts', postId, finalPost);
       
       import('@/lib/db').then(({ logActivity }) => {
         logActivity(`${status === 'draft' ? 'Updated draft' : 'Published'} blog post: ${form.title}`, 'blog');
