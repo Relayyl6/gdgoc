@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getCollection, saveCollection } from '@/lib/db';
+import { getCollection, saveDocument } from '@/lib/db';
 
 export async function POST(req: Request) {
   try {
@@ -9,12 +9,15 @@ export async function POST(req: Request) {
     }
 
     const events = await getCollection('gdgoc_events') || [];
-    const idx = events.findIndex((e: any) => e.id === eventId);
+    const event = events.find((e: any) => e.id === eventId);
     
-    if (idx !== -1) {
-      events[idx].registeredCount = (events[idx].registeredCount || 0) + 1;
-      await saveCollection('gdgoc_events', events);
-      return NextResponse.json({ success: true, newCount: events[idx].registeredCount });
+    if (event) {
+      const newCount = (event.registeredCount || 0) + 1;
+      // Preserve all unmapped properties natively
+      const updatedEvent = { ...event, registeredCount: newCount };
+      
+      await saveDocument('gdgoc_events', eventId, updatedEvent);
+      return NextResponse.json({ success: true, newCount });
     }
     
     return NextResponse.json({ success: false, error: 'Event not found' }, { status: 404 });
