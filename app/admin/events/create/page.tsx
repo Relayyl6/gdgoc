@@ -173,7 +173,7 @@ export default function CreateEventPage() {
     location: '',
     meetingLink: '',
     bevyLink: '', speakerLink: '', traineeLink: '',
-    maxAttendees: '',
+    
     description: '',
     whatToExpect: '',
   });
@@ -227,8 +227,8 @@ export default function CreateEventPage() {
       whatToExpect: form.whatToExpect.split('\n').filter(s => s.trim()),
       speakers: [],
       agenda: [],
-      maxAttendees: parseInt(form.maxAttendees) || 100,
-      registeredCount: 0,
+      
+      
       coverGradient: 'from-blue-600 to-blue-400',
       isPast: false,
       featured: featured,
@@ -328,17 +328,7 @@ export default function CreateEventPage() {
                     </div>
                   </Field>
 
-                  <Field label="Max Attendees" icon={Users}>
-                    <input
-                      type="number"
-                      min={1}
-                      required
-                      className={inputCls}
-                      placeholder="e.g. 100"
-                      value={form.maxAttendees}
-                      onChange={setField('maxAttendees')}
-                    />
-                  </Field>
+                  
 
                   <Field label="Bevy Event URL (Optional)" icon={MapPin}>
                     <input
@@ -561,10 +551,7 @@ export default function CreateEventPage() {
                       <MapPin className="w-3 h-3" />
                       {form.location || 'Location TBD'}
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <Users className="w-3 h-3" />
-                      {form.maxAttendees ? `${form.maxAttendees} seats` : 'Seats TBD'}
-                    </span>
+                    
                   </div>
                 </div>
                 <p className="text-xs text-gray-400 mt-3 text-center">
