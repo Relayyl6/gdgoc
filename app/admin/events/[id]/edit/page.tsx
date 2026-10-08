@@ -374,7 +374,7 @@ const addAgendaItem = () => {
             description: a.description?.trim(),
           }))
           .filter((a) => a.title || a.time),
-        maxAttendees: Number(form.maxAttendees) || 100,
+        
         registeredCount: Number(form.registeredCount) || (originalEvent.registeredCount || 0),
         coverGradient: form.coverGradient || (originalEvent.coverGradient || 'from-blue-600 to-blue-400'),
         isPast: form.isPast,
