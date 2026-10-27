@@ -94,21 +94,25 @@ function FooterWave() {
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
+        {/* Blue wave */}
         <path
           fill="#4285F4"
           fillOpacity="0.18"
           d="M0,120 C240,60 480,180 720,120 C960,60 1200,180 1440,120 L1440,180 L0,180 Z"
         />
+        {/* Green wave */}
         <path
           fill="#34A853"
           fillOpacity="0.15"
           d="M0,140 C200,90 440,180 720,140 C1000,100 1220,180 1440,130 L1440,180 L0,180 Z"
         />
+        {/* Yellow wave */}
         <path
           fill="#F9AB00"
           fillOpacity="0.12"
           d="M0,160 C360,110 720,180 1080,145 C1200,130 1320,170 1440,155 L1440,180 L0,180 Z"
         />
+        {/* Red accent wave */}
         <path
           fill="#EA4335"
           fillOpacity="0.08"
@@ -134,14 +138,12 @@ function SocialBtn({
     <a
       href={href}
       aria-label={label}
-      className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 hover:text-blue-500 hover:shadow-md hover:scale-105 transition-all duration-200"
+      className="w-9 h-9 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center text-gray-500 hover:text-blue-500 hover:shadow-md hover:scale-110 transition-all duration-200"
     >
       {children}
     </a>
   );
 }
-
-// ─── Footer ───────────────────────────────────────────────────────────────────
 
 export default function Footer() {
   const pathname = usePathname();
@@ -151,25 +153,33 @@ export default function Footer() {
 
   return (
     <footer
-      className="w-full bg-white p-4 sm:p-6 md:p-8"
+      className="w-full bg-white p-6 md:p-8"
       style={{ fontFamily: "'Google Sans', sans-serif" }}
     >
-      <div className="relative w-full max-w-7xl mx-auto bg-gray-50/80 rounded-2xl sm:rounded-[2.5rem] border border-gray-100 overflow-hidden pt-8 sm:pt-14 pb-16 sm:pb-28 px-5 sm:px-8 md:px-14">
+      {/* ── Inner card ──────────────────────────────────────────────────────── */}
+      <div className="relative w-full max-w-7xl mx-auto bg-gray-50/80 rounded-[2.5rem] md:rounded-[3rem] border border-gray-100 overflow-hidden pt-12 sm:pt-16 pb-28 sm:pb-36 px-6 sm:px-10 md:px-14 shadow-sm">
 
         {/* ── Top section: brand + nav ──────────────────────────────────────── */}
-        <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-8 sm:gap-12 mb-10 sm:mb-16">
+        <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-12 mb-16">
 
           {/* Brand left */}
           <div className="max-w-xs">
-            <div className="flex items-center mb-4 sm:mb-5">
+            {/* Logo */}
+            <div className="flex items-center mb-5 h-12 overflow-visible">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo.png" alt="GDGOC UNIBEN" className="h-8 sm:h-9 w-auto object-contain" />
+              <img
+                src="/logo.png"
+                alt="GDGOC UNIBEN"
+                className="h-[210%] w-auto object-contain -ml-3"
+              />
             </div>
-            <p className="text-xs sm:text-sm text-gray-500 leading-relaxed mb-5 sm:mb-7">
+            {/* Description */}
+            <p className="text-sm text-gray-500 leading-relaxed mb-7">
               Empowering students to transform ideas into reality. Learn, build, and grow with a
               modern, tech-forward community platform.
             </p>
-            <div className="flex items-center gap-2">
+            {/* Social icons */}
+            <div className="flex items-center gap-2.5">
               <SocialBtn href="#" label="X / Twitter">
                 <IconX />
               </SocialBtn>
@@ -186,42 +196,43 @@ export default function Footer() {
           </div>
 
           {/* Nav columns right */}
-          <div className="flex gap-8 sm:gap-12 md:gap-20 flex-wrap">
-            <div className="flex flex-col gap-2.5 sm:gap-3">
-              <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 mb-0.5 sm:mb-1">
+          <div className="flex gap-12 md:gap-20 flex-wrap">
+            {/* Ecosystem */}
+            <div className="flex flex-col gap-3">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
                 Ecosystem
               </h4>
-              <Link href="/events" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/events" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Events
               </Link>
-              <Link href="/events/create" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/events/create" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Create Event
               </Link>
-              <Link href="/blog" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/blog" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Blog
               </Link>
-              <Link href="/showcase" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/showcase" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Showcase
               </Link>
             </div>
-
-            <div className="flex flex-col gap-2.5 sm:gap-3">
-              <h4 className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 mb-0.5 sm:mb-1">
+            {/* Community */}
+            <div className="flex flex-col gap-3">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
                 Community
               </h4>
-              <Link href="/about" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 About
               </Link>
-              <Link href="/team" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/team" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Team
               </Link>
-              <Link href="/join" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/join" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Join
               </Link>
-              <Link href="/contact" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/contact" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Contact
               </Link>
-              <Link href="/admin" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 transition-colors">
+              <Link href="/admin" className="text-sm text-gray-600 hover:text-gray-900 transition-colors">
                 Admin
               </Link>
             </div>
@@ -229,18 +240,19 @@ export default function Footer() {
         </div>
 
         {/* ── Bottom bar ───────────────────────────────────────────────────── */}
-        <div className="relative z-10 border-t border-gray-200/70 pt-5 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 text-xs text-gray-400">
-          <div className="flex flex-col gap-0.5 items-center md:items-start text-center md:text-left">
+        <div className="relative z-10 border-t border-gray-200/70 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
+          {/* Copyright */}
+          <div className="flex flex-col gap-1 items-center md:items-start text-center md:text-left">
             <span>© {new Date().getFullYear()} GDGOC UNIBEN. All rights reserved.</span>
             <span className="text-blue-500 font-medium">Made by Yemuel - 09064982841</span>
           </div>
-
+          {/* Disclaimer */}
           <span className="text-center max-w-md text-[10px] text-gray-400">
             GDG on Campus is an independent group; activities and opinions expressed should not be
             linked to Google, the corporation.
           </span>
-
-          <div className="flex gap-4 text-[11px] sm:text-xs">
+          {/* Links */}
+          <div className="flex gap-5">
             <Link href="/privacy" className="hover:text-gray-800 transition-colors">
               Privacy Policy
             </Link>
@@ -250,11 +262,13 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* ── Scenic wave graphic ───────────────────────────────────────────── */}
         <FooterWave />
       </div>
 
+      {/* ── Huge Ghost watermark text — outside card, below it ────────────────── */}
       <div
-        className="text-[12vw] sm:text-[18vw] font-black text-gray-100 text-center select-none pointer-events-none -mt-4 sm:-mt-8 relative z-0 leading-none overflow-hidden"
+        className="text-[20vw] font-black text-gray-100 text-center select-none pointer-events-none -mt-8 sm:-mt-12 md:-mt-16 relative z-0 leading-none tracking-tight overflow-hidden"
         aria-hidden
       >
         GDGOC
