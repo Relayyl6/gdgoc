@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,9 +30,17 @@ import {
   LogOut,
   Palette,
   Sparkles,
+  Upload,
+  X,
+  Wifi,
+  Image as ImageIcon,
+  GraduationCap,
+  Loader2,
+  Radio,
 } from 'lucide-react';
-import { type Event  } from '@/lib/data';
-import { getCollection, saveCollection, saveDocument, deleteDocument } from '@/lib/db';
+import { type Event } from '@/lib/data';
+import { getCollection, saveDocument } from '@/lib/db';
+import { uploadImage } from '@/lib/upload';
 import AdminLayout from '@/components/AdminLayout';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -74,8 +82,6 @@ const NAV_ITEMS = [
   { label: 'Volunteers', href: '/admin/volunteers', icon: HandHeart },
 ];
 
-
-
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 
 function Sidebar() {
@@ -88,7 +94,6 @@ function Sidebar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-gray-950 flex flex-col z-30 border-r border-white/10">
-      {/* Logo */}
       <div className="px-6 py-6 border-b border-white/10">
         <Link href="/admin" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
@@ -101,7 +106,6 @@ function Sidebar() {
         </Link>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
           const active = href === '/admin/events';
@@ -122,7 +126,6 @@ function Sidebar() {
         })}
       </nav>
 
-      {/* Logout */}
       <div className="px-3 py-4 border-t border-white/10">
         <button
           onClick={handleLogout}
@@ -143,10 +146,13 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
   const routeParams = useParams();
   const eventId = params?.id || (routeParams?.id as string);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isVerifying, setIsVerifying] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
 
   // Form state
   const [form, setForm] = useState({
@@ -157,11 +163,19 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
     endTime: '1:00 PM',
     location: '',
     isOnline: false,
+    meetingLink: '',
+    bevyLink: '',
+    speakerLink: '',
+    traineeLink: '',
+    allowSpeakers: false,
+    allowTrainees: false,
+    status: 'published',
     description: '',
     whatToExpect: ['Hands-on project work', 'Direct mentorship from leads'],
     maxAttendees: 100,
     registeredCount: 0,
     coverGradient: 'from-blue-600 to-blue-400',
+    image: '',
     isPast: false,
     featured: false,
     speakers: [] as { name: string; title: string; bio: string }[],
@@ -184,7 +198,6 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
             foundEvent = parsed.find((e: any) => e.id === eventId);
           }
 
-
           if (foundEvent) {
             setForm({
               title: foundEvent.title || '',
@@ -194,6 +207,13 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
               endTime: foundEvent.endTime || '1:00 PM',
               location: foundEvent.location || '',
               isOnline: Boolean(foundEvent.isOnline),
+              meetingLink: foundEvent.meetingLink || '',
+              bevyLink: foundEvent.bevyLink || '',
+              speakerLink: foundEvent.speakerLink || '',
+              traineeLink: foundEvent.traineeLink || '',
+              allowSpeakers: Boolean(foundEvent.allowSpeakers),
+              allowTrainees: Boolean(foundEvent.allowTrainees),
+              status: foundEvent.status || 'published',
               description: foundEvent.description || '',
               whatToExpect:
                 foundEvent.whatToExpect && foundEvent.whatToExpect.length > 0
@@ -202,6 +222,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
               maxAttendees: foundEvent.maxAttendees || 100,
               registeredCount: foundEvent.registeredCount || 0,
               coverGradient: foundEvent.coverGradient || 'from-blue-600 to-blue-400',
+              image: foundEvent.image || '',
               isPast: Boolean(foundEvent.isPast),
               featured: Boolean(foundEvent.featured),
               speakers: foundEvent.speakers ? [...foundEvent.speakers] : [],
@@ -229,6 +250,45 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
       ...prev,
       [name]: name === 'maxAttendees' || name === 'registeredCount' ? Number(value) : value,
     }));
+  };
+
+  // ── Image Handlers ──────────────────────────────────────────────────────────
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setImageUploadError('Please select a valid image file (PNG, JPG, WEBP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setImageUploadError('Image size exceeds 5MB limit.');
+      return;
+    }
+
+    setImageUploadError(null);
+    setIsUploadingImage(true);
+
+    try {
+      const url = await uploadImage(file, 'gdgoc_events');
+      setForm((p) => ({ ...p, image: url }));
+      setIsUploadingImage(false);
+    } catch {
+      // Fallback to local Data URL reader
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setForm((p) => ({ ...p, image: reader.result as string }));
+        setIsUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeCoverImage = () => {
+    setForm((p) => ({ ...p, image: '' }));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   // ── Speaker Handlers ────────────────────────────────────────────────────────
@@ -261,10 +321,9 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
 
   // ── Agenda Handlers ─────────────────────────────────────────────────────────
 
-  
   const moveAgendaItemUp = (index: number) => {
     if (index === 0) return;
-    setForm(prev => {
+    setForm((prev) => {
       const newAgenda = [...prev.agenda];
       const temp = newAgenda[index];
       newAgenda[index] = newAgenda[index - 1];
@@ -275,7 +334,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
 
   const moveAgendaItemDown = (index: number) => {
     if (index === form.agenda.length - 1) return;
-    setForm(prev => {
+    setForm((prev) => {
       const newAgenda = [...prev.agenda];
       const temp = newAgenda[index];
       newAgenda[index] = newAgenda[index + 1];
@@ -284,7 +343,7 @@ export default function EditEventPage({ params }: { params?: { id: string } }) {
     });
   };
 
-const addAgendaItem = () => {
+  const addAgendaItem = () => {
     setForm((prev) => ({
       ...prev,
       agenda: [...prev.agenda, { time: '', title: '', type: 'talk' }],
@@ -336,7 +395,7 @@ const addAgendaItem = () => {
 
   // ── Submit / Save ───────────────────────────────────────────────────────────
 
-    const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
 
@@ -348,7 +407,7 @@ const addAgendaItem = () => {
       const originalEvent = storageEvents.find((ev) => ev.id === eventId) || {};
 
       const updatedEvent = {
-        ...originalEvent, // Preserve all un-mapped fields (e.g. image, bevyLink, meetingLink)
+        ...originalEvent, // Preserve all un-mapped fields safely
         id: eventId,
         title: form.title.trim(),
         type: form.type,
@@ -357,6 +416,13 @@ const addAgendaItem = () => {
         endTime: form.endTime.trim() || '1:00 PM',
         location: form.location.trim(),
         isOnline: form.isOnline,
+        meetingLink: form.isOnline ? form.meetingLink.trim() || undefined : undefined,
+        bevyLink: form.bevyLink.trim() || undefined,
+        allowSpeakers: form.allowSpeakers,
+        allowTrainees: form.allowTrainees,
+        speakerLink: form.speakerLink.trim() || undefined,
+        traineeLink: form.traineeLink.trim() || undefined,
+        status: form.status,
         description: form.description.trim(),
         whatToExpect: form.whatToExpect.map((s) => s.trim()).filter(Boolean),
         speakers: form.speakers
@@ -377,36 +443,36 @@ const addAgendaItem = () => {
         maxAttendees: Number(form.maxAttendees) || 100,
         registeredCount: Number(form.registeredCount) || (originalEvent.registeredCount || 0),
         coverGradient: form.coverGradient || (originalEvent.coverGradient || 'from-blue-600 to-blue-400'),
+        image: form.image.trim() || undefined,
         isPast: form.isPast,
         featured: form.featured,
       };
 
       if (updatedEvent.featured) {
         // Enforce max 4 featured events
-        let featuredEvents = storageEvents.filter((e: any) => e.featured && e.id !== eventId);
+        const featuredEvents = storageEvents.filter((e: any) => e.featured && e.id !== eventId);
         if (featuredEvents.length >= 4) {
           // Sort by date (oldest first)
           featuredEvents.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
           const toUnfeatureCount = featuredEvents.length - 3;
           const toUnfeature = featuredEvents.slice(0, toUnfeatureCount);
-          
+
           for (const ev of toUnfeature) {
             await saveDocument('gdgoc_events', ev.id, { ...ev, featured: false });
           }
         }
       }
 
-      // Save only this document
+      // Save this document targetedly
       await saveDocument('gdgoc_events', eventId, updatedEvent);
-      
-      // Also log activity
+
       import('@/lib/db').then(({ logActivity }) => {
         logActivity(`Updated event: ${updatedEvent.title}`, 'event');
       });
 
       router.push('/admin/events');
     } catch (e) {
-      console.error(e);
+      console.error('Save failed:', e);
       setIsSaving(false);
     }
   };
@@ -468,7 +534,7 @@ const addAgendaItem = () => {
               </span>
             </h1>
             <p className="text-gray-400 text-sm mt-1">
-              Update schedule, speakers, registration limits, and event details.
+              Update schedule, images, registration links, speakers, and event details.
             </p>
           </div>
 
@@ -521,7 +587,7 @@ const addAgendaItem = () => {
                 />
               </div>
 
-              {/* Type + Date */}
+              {/* Type + Status */}
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
@@ -546,6 +612,27 @@ const addAgendaItem = () => {
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                    Publication Status *
+                  </label>
+                  <div className="relative">
+                    <select
+                      name="status"
+                      value={form.status}
+                      onChange={handleInputChange}
+                      className="w-full appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition pr-10"
+                    >
+                      <option value="published" className="bg-gray-900 text-white">Published (Live)</option>
+                      <option value="draft" className="bg-gray-900 text-white">Draft (Hidden)</option>
+                    </select>
+                    <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Date + Times */}
+              <div className="grid sm:grid-cols-3 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                     Event Date *
                   </label>
                   <input
@@ -557,10 +644,7 @@ const addAgendaItem = () => {
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                   />
                 </div>
-              </div>
 
-              {/* Times */}
-              <div className="grid sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                     <Clock className="inline w-3.5 h-3.5 mr-1 text-gray-400" />
@@ -596,7 +680,7 @@ const addAgendaItem = () => {
               <div>
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                   <MapPin className="inline w-3.5 h-3.5 mr-1 text-gray-400" />
-                  Location *
+                  Location / Venue *
                 </label>
                 <input
                   type="text"
@@ -609,14 +693,14 @@ const addAgendaItem = () => {
                 />
               </div>
 
-              {/* Toggles: Online & Past */}
-              <div className="grid sm:grid-cols-2 gap-4 pt-2">
+              {/* Toggles: Online, Featured, Past */}
+              <div className="grid sm:grid-cols-3 gap-4 pt-2">
                 <div className="flex items-center justify-between p-3.5 rounded-xl bg-white/[0.03] border border-white/10">
                   <div className="flex items-center gap-2.5">
                     <Globe className="w-4 h-4 text-blue-400" />
                     <div>
                       <p className="text-sm font-medium text-white">Online / Virtual</p>
-                      <p className="text-xs text-gray-400">Streamed or hosted on Google Meet</p>
+                      <p className="text-xs text-gray-400">Streamed on Meet</p>
                     </div>
                   </div>
                   <button
@@ -639,7 +723,7 @@ const addAgendaItem = () => {
                     <Sparkles className="w-4 h-4 text-purple-400" />
                     <div>
                       <p className="text-sm font-medium text-white">Featured Event</p>
-                      <p className="text-xs text-gray-400">Shows on the homepage</p>
+                      <p className="text-xs text-gray-400">Homepage banner</p>
                     </div>
                   </div>
                   <button
@@ -661,8 +745,8 @@ const addAgendaItem = () => {
                   <div className="flex items-center gap-2.5">
                     <Calendar className="w-4 h-4 text-amber-400" />
                     <div>
-                      <p className="text-sm font-medium text-white">Mark as Past Event</p>
-                      <p className="text-xs text-gray-400">Shows under past archive</p>
+                      <p className="text-sm font-medium text-white">Past Event</p>
+                      <p className="text-xs text-gray-400">In past archive</p>
                     </div>
                   </div>
                   <button
@@ -680,6 +764,31 @@ const addAgendaItem = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Meeting Link (Conditional for Online events) */}
+              <AnimatePresence>
+                {form.isOnline && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                      <Wifi className="inline w-3.5 h-3.5 mr-1 text-blue-400" />
+                      Meeting Link (Google Meet / Zoom URL)
+                    </label>
+                    <input
+                      type="url"
+                      name="meetingLink"
+                      value={form.meetingLink}
+                      onChange={handleInputChange}
+                      placeholder="https://meet.google.com/xxx-yyyy-zzz"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Description */}
               <div>
@@ -699,138 +808,314 @@ const addAgendaItem = () => {
             </div>
           </div>
 
-          {/* ── Section 2: Capacity & Registration ── */}
+          {/* ── Section 2: Registration Links & Capacity ── */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
             <h2 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-              <Users2 className="w-4 h-4 text-green-400" />
-              Capacity &amp; Attendance
+              <ExternalLink className="w-4 h-4 text-emerald-400" />
+              Registration Links &amp; Attendance
             </h2>
 
-            <div className="grid sm:grid-cols-2 gap-5">
+            <div className="space-y-5">
+              {/* Bevy Event Link */}
               <div>
                 <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                  Max Capacity (Attendees) *
+                  <MapPin className="inline w-3.5 h-3.5 mr-1 text-blue-400" />
+                  Bevy Event Registration URL (Optional)
                 </label>
                 <input
-                  type="number"
-                  name="maxAttendees"
-                  value={form.maxAttendees}
+                  type="url"
+                  name="bevyLink"
+                  value={form.bevyLink}
                   onChange={handleInputChange}
-                  min={1}
-                  required
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  placeholder="https://gdg.community.dev/events/details/..."
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                 />
+                <p className="text-xs text-gray-400 mt-1">
+                  When provided, users who click &quot;Register Now&quot; will be counted and redirected directly to your Bevy event page.
+                </p>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                  Registered Count
-                </label>
-                <input
-                  type="number"
-                  name="registeredCount"
-                  value={form.registeredCount}
-                  onChange={handleInputChange}
-                  min={0}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                />
-              </div>
-            </div>
-
-            {/* Live Fill bar */}
-            <div className="mt-4 pt-4 border-t border-white/5">
-              <div className="flex justify-between text-xs text-gray-400 mb-1.5">
-                <span>
-                  Current fill: {form.registeredCount} / {form.maxAttendees} seats
-                </span>
-                <span>
-                  {Math.round(
-                    Math.min(
-                      (form.registeredCount / Math.max(form.maxAttendees, 1)) * 100,
-                      100,
-                    ),
+              {/* Speaker & Trainee Toggles */}
+              <div className="grid sm:grid-cols-2 gap-4 pt-2">
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Mic className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm font-medium text-white">Allow Speaker Registration</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, allowSpeakers: !p.allowSpeakers }))}
+                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                        form.allowSpeakers ? 'bg-purple-600' : 'bg-white/20'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                          form.allowSpeakers ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  {form.allowSpeakers && (
+                    <input
+                      type="url"
+                      name="speakerLink"
+                      value={form.speakerLink}
+                      onChange={handleInputChange}
+                      placeholder="Custom Speaker Form URL (optional)"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-purple-500 transition"
+                    />
                   )}
-                  % filled
-                </span>
+                </div>
+
+                <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <GraduationCap className="w-4 h-4 text-indigo-400" />
+                      <span className="text-sm font-medium text-white">Allow Trainee Registration</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, allowTrainees: !p.allowTrainees }))}
+                      className={`relative w-11 h-6 rounded-full transition-colors ${
+                        form.allowTrainees ? 'bg-indigo-600' : 'bg-white/20'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                          form.allowTrainees ? 'translate-x-5' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  {form.allowTrainees && (
+                    <input
+                      type="url"
+                      name="traineeLink"
+                      value={form.traineeLink}
+                      onChange={handleInputChange}
+                      placeholder="Custom Trainee Form URL (optional)"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition"
+                    />
+                  )}
+                </div>
               </div>
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-blue-500 rounded-full transition-all"
-                  style={{
-                    width: `${Math.min(
-                      (form.registeredCount / Math.max(form.maxAttendees, 1)) * 100,
-                      100,
-                    )}%`,
-                  }}
-                />
+
+              {/* Capacity & Registered */}
+              <div className="grid sm:grid-cols-2 gap-5 pt-2">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                    Max Capacity (Attendees) *
+                  </label>
+                  <input
+                    type="number"
+                    name="maxAttendees"
+                    value={form.maxAttendees}
+                    onChange={handleInputChange}
+                    min={1}
+                    required
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                    Registered Click Count
+                  </label>
+                  <input
+                    type="number"
+                    name="registeredCount"
+                    value={form.registeredCount}
+                    onChange={handleInputChange}
+                    min={0}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                  />
+                </div>
+              </div>
+
+              {/* Fill bar */}
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+                  <span>
+                    Current fill: {form.registeredCount} / {form.maxAttendees} seats
+                  </span>
+                  <span>
+                    {Math.round(
+                      Math.min(
+                        (form.registeredCount / Math.max(form.maxAttendees, 1)) * 100,
+                        100,
+                      ),
+                    )}
+                    % filled
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all"
+                    style={{
+                      width: `${Math.min(
+                        (form.registeredCount / Math.max(form.maxAttendees, 1)) * 100,
+                        100,
+                      )}%`,
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* ── Section 3: Visual Theme & Gradient ── */}
+          {/* ── Section 3: Event Cover Image & Theme ── */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
-            <h2 className="text-base font-bold text-white mb-5 flex items-center gap-2">
-              <Palette className="w-4 h-4 text-purple-400" />
-              Cover Banner &amp; Theme Gradient
+            <h2 className="text-base font-bold text-white mb-2 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-cyan-400" />
+              Event Cover Image
             </h2>
-
-            <p className="text-xs text-gray-400 mb-4">
-              Select a visual gradient theme for the event header and cards.
+            <p className="text-xs text-gray-400 mb-6">
+              Upload a banner or flyer for this event, or paste a public image URL. If no image is provided, the gradient banner will be used.
             </p>
 
-            {/* Gradient chips */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-              {GRADIENT_PRESETS.map((preset) => (
-                <button
-                  key={preset.value}
-                  type="button"
-                  onClick={() => setForm((p) => ({ ...p, coverGradient: preset.value }))}
-                  className={`flex items-center gap-3 p-2.5 rounded-xl border transition text-left ${
-                    form.coverGradient === preset.value
-                      ? 'border-blue-500 bg-white/10 ring-1 ring-blue-500'
-                      : 'border-white/10 bg-white/[0.02] hover:bg-white/5'
-                  }`}
-                >
-                  <div
-                    className={`w-6 h-6 rounded-lg bg-gradient-to-r ${preset.value} shrink-0`}
+            {/* Current Image Preview & Controls */}
+            <div className="space-y-4">
+              {form.image ? (
+                <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/40 group max-w-xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={form.image}
+                    alt="Event Cover Preview"
+                    className="w-full h-56 object-cover"
                   />
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white truncate">{preset.name}</p>
+                  <div className="absolute top-3 right-3 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white text-xs font-semibold backdrop-blur-md transition flex items-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      Replace
+                    </button>
+                    <button
+                      type="button"
+                      onClick={removeCoverImage}
+                      className="p-1.5 rounded-lg bg-red-600/80 hover:bg-red-600 text-white text-xs font-semibold backdrop-blur-md transition"
+                      title="Remove Image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
                   </div>
-                </button>
-              ))}
-            </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center w-full max-w-xl h-44 rounded-2xl border-2 border-dashed border-white/15 hover:border-blue-500/50 hover:bg-blue-500/5 transition cursor-pointer p-6 text-center"
+                >
+                  {isUploadingImage ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-8 h-8 text-blue-400 animate-spin" />
+                      <p className="text-xs font-semibold text-white">Uploading image…</p>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                      <p className="text-sm font-semibold text-white">Click to upload cover image</p>
+                      <p className="text-xs text-gray-500 mt-1">PNG, JPG, WEBP up to 5MB</p>
+                    </>
+                  )}
+                </div>
+              )}
 
-            {/* Custom input */}
-            <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">
-                Tailwind Gradient Classes
-              </label>
               <input
-                type="text"
-                name="coverGradient"
-                value={form.coverGradient}
-                onChange={handleInputChange}
-                placeholder="e.g. from-blue-600 to-blue-400"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs font-mono text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
               />
+
+              {imageUploadError && (
+                <p className="text-xs text-red-400 font-medium">{imageUploadError}</p>
+              )}
+
+              {/* Direct Image URL input */}
+              <div className="pt-2 max-w-xl">
+                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                  Or paste direct Image URL:
+                </label>
+                <input
+                  type="url"
+                  name="image"
+                  value={form.image}
+                  onChange={handleInputChange}
+                  placeholder="https://example.com/banner.png"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                />
+              </div>
             </div>
 
-            {/* Live Preview Card */}
-            <div className="mt-4 pt-4 border-t border-white/5">
-              <p className="text-xs text-gray-400 mb-2 font-medium">Banner Preview:</p>
-              <div
-                className={`bg-gradient-to-br ${form.coverGradient} rounded-2xl p-6 shadow-lg text-white`}
-              >
-                <span className="inline-block bg-white/20 text-xs font-bold px-2.5 py-0.5 rounded-full mb-2">
-                  {form.type}
-                </span>
-                <h3 className="text-xl font-bold mb-1">
-                  {form.title || 'Event Title Preview'}
-                </h3>
-                <p className="text-xs text-white/80">
-                  {form.date || 'YYYY-MM-DD'} &bull; {form.startTime} &ndash; {form.endTime} &bull; {form.location || 'Location'}
-                </p>
+            {/* Gradient Theme Presets */}
+            <div className="mt-8 pt-6 border-t border-white/10">
+              <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Palette className="w-4 h-4 text-purple-400" />
+                Fallback Theme Gradient
+              </h3>
+              <p className="text-xs text-gray-400 mb-4">
+                Used if no image is uploaded and as background color for tags and buttons.
+              </p>
+
+              {/* Gradient chips */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+                {GRADIENT_PRESETS.map((preset) => (
+                  <button
+                    key={preset.value}
+                    type="button"
+                    onClick={() => setForm((p) => ({ ...p, coverGradient: preset.value }))}
+                    className={`flex items-center gap-3 p-2.5 rounded-xl border transition text-left ${
+                      form.coverGradient === preset.value
+                        ? 'border-blue-500 bg-white/10 ring-1 ring-blue-500'
+                        : 'border-white/10 bg-white/[0.02] hover:bg-white/5'
+                    }`}
+                  >
+                    <div
+                      className={`w-6 h-6 rounded-lg bg-gradient-to-r ${preset.value} shrink-0`}
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-white truncate">{preset.name}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom input */}
+              <div>
+                <label className="block text-xs font-medium text-gray-400 mb-1.5">
+                  Tailwind Gradient Classes
+                </label>
+                <input
+                  type="text"
+                  name="coverGradient"
+                  value={form.coverGradient}
+                  onChange={handleInputChange}
+                  placeholder="e.g. from-blue-600 to-blue-400"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs font-mono text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                />
+              </div>
+
+              {/* Live Preview Card */}
+              <div className="mt-4 pt-4 border-t border-white/5">
+                <p className="text-xs text-gray-400 mb-2 font-medium">Banner Preview:</p>
+                <div
+                  className={`bg-gradient-to-br ${form.coverGradient} rounded-2xl p-6 shadow-lg text-white`}
+                >
+                  <span className="inline-block bg-white/20 text-xs font-bold px-2.5 py-0.5 rounded-full mb-2">
+                    {form.type}
+                  </span>
+                  <h3 className="text-xl font-bold mb-1">
+                    {form.title || 'Event Title Preview'}
+                  </h3>
+                  <p className="text-xs text-white/80">
+                    {form.date || 'YYYY-MM-DD'} &bull; {form.startTime} &ndash; {form.endTime} &bull; {form.location || 'Location'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -889,7 +1174,7 @@ const addAgendaItem = () => {
             </div>
           </div>
 
-          {/* ── Section 5: Speakers (Dynamic Form Section) ── */}
+          {/* ── Section 5: Speakers ── */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -914,7 +1199,6 @@ const addAgendaItem = () => {
               </button>
             </div>
 
-            {/* Speakers List */}
             <div className="space-y-4">
               <AnimatePresence>
                 {form.speakers.map((speaker, index) => (
@@ -925,31 +1209,21 @@ const addAgendaItem = () => {
                     exit={{ opacity: 0, height: 0 }}
                     className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-3 relative group"
                   >
-                    {/* Speaker header */}
                     <div className="flex items-center justify-between pb-2 border-b border-white/5">
-                          <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-                            <ListOrdered className="w-3.5 h-3.5 text-purple-400" />
-                            Session #{index + 1}
-                          </span>
-                          <div className="flex items-center gap-1">
-                            <button type="button" onClick={() => moveAgendaItemUp(index)} disabled={index === 0} className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition" title="Move Up">
-                              <ArrowUp className="w-3.5 h-3.5" />
-                            </button>
-                            <button type="button" onClick={() => moveAgendaItemDown(index)} disabled={index === form.agenda.length - 1} className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition" title="Move Down">
-                              <ArrowDown className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => removeAgendaItem(index)}
-                              className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 p-1 ml-2 rounded-md hover:bg-red-500/10 transition"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                              Remove
-                            </button>
-                          </div>
-                        </div>
+                      <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <Mic className="w-3.5 h-3.5 text-blue-400" />
+                        Speaker #{index + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => removeSpeaker(index)}
+                        className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 p-1 rounded-md hover:bg-red-500/10 transition"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Remove
+                      </button>
+                    </div>
 
-                    {/* Name & Title */}
                     <div className="grid sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-medium text-gray-400 mb-1">
@@ -977,7 +1251,6 @@ const addAgendaItem = () => {
                       </div>
                     </div>
 
-                    {/* Bio */}
                     <div>
                       <label className="block text-xs font-medium text-gray-400 mb-1">
                         Short Biography
@@ -1006,7 +1279,7 @@ const addAgendaItem = () => {
             </div>
           </div>
 
-          {/* ── Section 6: Agenda (Dynamic Form Section) ── */}
+          {/* ── Section 6: Agenda ── */}
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-5">
               <div>
@@ -1031,7 +1304,6 @@ const addAgendaItem = () => {
               </button>
             </div>
 
-            {/* Agenda List */}
             <div className="space-y-4">
               <AnimatePresence>
                 {form.agenda.map((item, index) => {
@@ -1046,25 +1318,42 @@ const addAgendaItem = () => {
                       exit={{ opacity: 0, height: 0 }}
                       className="p-4 rounded-xl bg-white/[0.03] border border-white/10 space-y-3 relative group"
                     >
-                      {/* Agenda header */}
                       <div className="flex items-center justify-between pb-2 border-b border-white/5">
                         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
                           <ListOrdered className="w-3.5 h-3.5 text-purple-400" />
                           Session #{index + 1}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => removeAgendaItem(index)}
-                          className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 p-1 rounded-md hover:bg-red-500/10 transition"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                          Remove
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveAgendaItemUp(index)}
+                            disabled={index === 0}
+                            className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                            title="Move Up"
+                          >
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveAgendaItemDown(index)}
+                            disabled={index === form.agenda.length - 1}
+                            className="p-1 rounded text-gray-400 hover:text-white hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                            title="Move Down"
+                          >
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeAgendaItem(index)}
+                            className="flex items-center gap-1 text-xs text-red-400 hover:text-red-300 p-1 ml-2 rounded-md hover:bg-red-500/10 transition"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Remove
+                          </button>
+                        </div>
                       </div>
 
-                      {/* Fields */}
                       <div className="grid sm:grid-cols-12 gap-3 items-end">
-                        {/* Time */}
                         <div className="sm:col-span-3">
                           <label className="block text-xs font-medium text-gray-400 mb-1">
                             Time / Slot *
@@ -1078,7 +1367,6 @@ const addAgendaItem = () => {
                           />
                         </div>
 
-                        {/* Title */}
                         <div className="sm:col-span-6">
                           <label className="block text-xs font-medium text-gray-400 mb-1">
                             Session Title *
@@ -1092,7 +1380,6 @@ const addAgendaItem = () => {
                           />
                         </div>
 
-                        {/* Type */}
                         <div className="sm:col-span-3">
                           <label className="block text-xs font-medium text-gray-400 mb-1">
                             Type
@@ -1110,25 +1397,23 @@ const addAgendaItem = () => {
                               ))}
                             </select>
                             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                            </div>
-                          </div>
-                          
-                          {/* Rich Text Description */}
-                          <div className="sm:col-span-12 mt-3">
-                            <label className="block text-xs font-medium text-gray-400 mb-1">
-                              Description (Optional)
-                            </label>
-                            <textarea
-                              value={item.description || ''}
-                              onChange={(e) => updateAgendaItem(index, 'description', e.target.value)}
-                              placeholder="Brief description of the session..."
-                              rows={2}
-                              className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
-                            />
                           </div>
                         </div>
 
-                      {/* Preview tag */}
+                        <div className="sm:col-span-12 mt-3">
+                          <label className="block text-xs font-medium text-gray-400 mb-1">
+                            Description (Optional)
+                          </label>
+                          <textarea
+                            value={item.description || ''}
+                            onChange={(e) => updateAgendaItem(index, 'description', e.target.value)}
+                            placeholder="Brief description of the session..."
+                            rows={2}
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition resize-none"
+                          />
+                        </div>
+                      </div>
+
                       <div className="pt-1 flex items-center gap-2">
                         <span className="text-[10px] text-gray-500 uppercase">Tag preview:</span>
                         <span

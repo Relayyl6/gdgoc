@@ -11,8 +11,8 @@ const COOKIE_NAME = 'gdgoc_admin_token';
 
 /** Generate the canonical signed token for the given email. */
 export function createAdminToken(email: string): string {
-  const secret = process.env.JWT_SECRET || 'gdgoc_uniben_super_secret_jwt_key_2026_xK9mPqR';
-  return Buffer.from(`${email}:${secret}`).toString('base64');
+  const secret = process.env.JWT_SECRET || 'gdgoc_uniben_jwt_secret_key';
+  return Buffer.from(`${email.toLowerCase().trim()}:${secret}`).toString('base64');
 }
 
 /**
@@ -23,11 +23,16 @@ export function signAdminIn(
   email: string,
   password: string,
 ): { success: true; token: string } | { success: false } {
-  const adminEmail = process.env.ADMIN_EMAIL || process.env.ADMIN_EMAIL || '';
-  const adminPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || '';
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
 
-  const isEmailValid = email === adminEmail || email === process.env.ADMIN_EMAIL || '' || email === '';
-  const isPasswordValid = password === adminPassword || password === process.env.ADMIN_PASSWORD || '';
+  if (!adminEmail || !adminPassword) {
+    console.error('ADMIN_EMAIL or ADMIN_PASSWORD is not configured in environment variables');
+    return { success: false };
+  }
+
+  const isEmailValid = email.toLowerCase().trim() === adminEmail.toLowerCase().trim();
+  const isPasswordValid = password === adminPassword;
 
   if (!isEmailValid || !isPasswordValid) {
     return { success: false };
@@ -42,13 +47,10 @@ export function signAdminIn(
  */
 export function verifyAdminToken(token: string): boolean {
   try {
-    const validEmails = [
-      process.env.ADMIN_EMAIL,
-      process.env.ADMIN_EMAIL || '',
-      ''
-    ].filter(Boolean) as string[];
+    const adminEmail = process.env.ADMIN_EMAIL;
+    if (!adminEmail) return false;
 
-    return validEmails.some(email => token === createAdminToken(email));
+    return token === createAdminToken(adminEmail);
   } catch (e) {
     console.error('Action failed:', e);
     return false;
