@@ -90,10 +90,10 @@ export default function ShowcasePage() {
             <Sparkles className="w-4 h-4" />
             <span className="tracking-wide uppercase">Community Showcase</span>
           </motion.div>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-2xl sm:text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-4 sm:mb-6">
             Built by <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">UNIBEN.</span>
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-4">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-sm sm:text-base md:text-xl text-gray-600 max-w-2xl mx-auto mb-4">
             Explore the vibrant moments from our past events and discover the incredible projects shipped by our student developers and designers.
           </motion.p>
 
@@ -138,7 +138,7 @@ export default function ShowcasePage() {
               <div className="w-full md:w-3/5 h-64 md:h-auto relative bg-gray-100">
                 <img src={selectedMemory.image} alt={selectedMemory.title} className="w-full h-full object-cover" />
               </div>
-              <div className="w-full md:w-2/5 p-8 flex flex-col overflow-y-auto">
+              <div className="w-full md:w-2/5 p-5 sm:p-8 flex flex-col overflow-y-auto">
                 <span className="text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">{selectedMemory.category}</span>
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">{selectedMemory.title}</h3>
                 <p className="text-gray-600 text-sm mb-8 leading-relaxed">{selectedMemory.caption}</p>
@@ -212,7 +212,7 @@ function ProjectsView({ projects, handleUpvote }: { projects: any[], handleUpvot
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
       {projects.map((project, idx) => (
         <motion.div key={project.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }} className="bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col group">
           <div className="h-48 relative overflow-hidden bg-gray-100">
@@ -297,14 +297,14 @@ function SubmitProjectModal({ onClose }: { onClose: () => void }) {
         </button>
         
         {success ? (
-          <div className="p-12 text-center">
+          <div className="p-6 sm:p-12 text-center">
             <CheckCircle className="w-20 h-20 text-green-500 mx-auto mb-6" />
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Project Submitted!</h2>
             <p className="text-gray-600 mb-8">Thank you for sharing your work. Our team will review it shortly. Once approved, it will appear in the Community Showcase.</p>
             <button onClick={onClose} className="bg-gray-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-800 transition">Close</button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-8">
+          <form onSubmit={handleSubmit} className="p-5 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Submit Your Project</h2>
             <p className="text-gray-500 text-sm mb-6">Built something cool? Whether it's a web app, a mobile app, or a UI design, we want to see it!</p>
             

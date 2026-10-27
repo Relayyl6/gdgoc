@@ -111,14 +111,14 @@ function RoleCard({ role, onApply }: { role: VolunteerRole; onApply: (id: string
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45 }}
-      className="bg-white/60 backdrop-blur-md border border-white/40 rounded-3xl p-8 flex flex-col gap-5 shadow-sm hover:shadow-lg transition-shadow"
+      className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-5 sm:p-7 flex flex-col gap-4 sm:gap-5 shadow-sm hover:shadow-lg transition-shadow"
     >
-      <div className={`${role.color} w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center`}>
+      <div className={`${role.color} w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gray-50 flex items-center justify-center`}>
         {role.icon}
       </div>
 
       <div>
-        <h3 className="text-xl font-bold mb-2">{role.title}</h3>
+        <h3 className="text-lg sm:text-xl font-bold mb-1.5">{role.title}</h3>
         <p className="text-gray-500 text-sm leading-relaxed">{role.description}</p>
       </div>
 
@@ -186,25 +186,25 @@ export default function VolunteerPage() {
 
   return (
     <div
-      className="min-h-screen bg-white text-black pt-24 pb-24"
+      className="min-h-screen bg-white text-black pt-20 sm:pt-24 pb-16 sm:pb-24"
       style={{ fontFamily: "'Google Sans', sans-serif" }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
 
         {/* ── Hero ─────────────────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="mb-20 max-w-3xl"
+          className="mb-12 sm:mb-16 md:mb-20 max-w-3xl"
         >
           <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-5 py-2 rounded-full text-sm font-bold mb-8 border border-blue-100">
             <Heart size={15} /> Volunteer Programme
           </span>
-          <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-6 leading-none">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 sm:mb-6 leading-none">
             Volunteer.
           </h1>
-          <p className="text-2xl text-gray-500 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-2xl text-gray-500 leading-relaxed">
             Use your skills to power the community. We need passionate people for various roles across events,
             content, design, engineering, and community relations.
           </p>
@@ -215,7 +215,7 @@ export default function VolunteerPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-16 sm:mb-24"
         >
           {[
             { label: 'Open Roles', value: '6' },
@@ -225,9 +225,9 @@ export default function VolunteerPage() {
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-gray-50 border border-gray-100 rounded-3xl p-6 text-center"
+              className="bg-gray-50 border border-gray-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center"
             >
-              <p className="text-4xl font-bold mb-1">{stat.value}</p>
+              <p className="text-2xl sm:text-3xl md:text-4xl font-bold mb-1">{stat.value}</p>
               <p className="text-sm text-gray-500 font-medium">{stat.label}</p>
             </div>
           ))}
@@ -241,8 +241,8 @@ export default function VolunteerPage() {
           transition={{ duration: 0.5 }}
           className="mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Open Roles</h2>
-          <p className="text-gray-500 text-lg max-w-xl">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight mb-3 sm:mb-4">Open Roles</h2>
+          <p className="text-gray-500 text-sm sm:text-base md:text-lg max-w-xl">
             Click <strong>"Apply to Volunteer"</strong> on any card to jump straight to the application form below.
           </p>
         </motion.div>
@@ -261,7 +261,7 @@ export default function VolunteerPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="bg-white/60 backdrop-blur-md border border-white/40 rounded-[2.5rem] p-10 md:p-14 shadow-sm"
+            className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-sm"
           >
             <h2 className="text-3xl font-bold mb-2">Volunteer Application</h2>
             <p className="text-gray-500 mb-10">

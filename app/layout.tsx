@@ -1,7 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { EnvWarning } from "@/components/EnvWarning";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gdgoc-six.vercel.app"),
@@ -28,8 +35,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 };
-
-import { EnvWarning } from "@/components/EnvWarning";
 
 export default function RootLayout({
   children,

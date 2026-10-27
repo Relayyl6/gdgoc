@@ -452,7 +452,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-4 sm:mb-6">
             {post.title}
           </h1>
 
@@ -479,7 +479,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
         </div>
 
         {/* Article body */}
-        <article className="bg-white/60 backdrop-blur-md border border-white/40 rounded-3xl p-8 md:p-10 shadow-sm mb-14">
+        <article className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-10 shadow-sm mb-10 sm:mb-14">
           {post.coverImage && (
             <img src={post.coverImage} className="w-full h-64 md:h-96 object-cover rounded-2xl mb-8" alt={post.title} />
           )}
@@ -521,7 +521,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
         )}
 
         {/* CTA */}
-        <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-3xl p-8 text-center text-white shadow-lg">
+        <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center text-white shadow-lg">
           <h2 className="text-xl font-bold mb-2">Enjoyed this article?</h2>
           <p className="text-blue-100 text-sm mb-6">
             Explore more tutorials, event recaps, and insights from the GDGOC UNIBEN community.

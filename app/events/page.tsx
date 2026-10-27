@@ -58,9 +58,9 @@ function SeatsBar({ registered, max }: { registered: number; max: number }) {
 
 function SliderCard({ event }: { event: Event }) {
   return (
-    <Link href={`/events/${event.id}`} className="block flex-shrink-0 w-80">
+    <Link href={`/events/${event.id}`} className="block flex-shrink-0 w-64 sm:w-80">
       <div
-        className={`bg-gradient-to-br ${event.coverGradient} rounded-2xl p-5 h-64 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition-transform duration-200 shadow-lg`}
+        className={`bg-gradient-to-br ${event.coverGradient} rounded-2xl p-4 sm:p-5 h-56 sm:h-64 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition-transform duration-200 shadow-lg`}
       >
         <div>
           <span className="text-xs font-semibold bg-white/20 text-white px-3 py-1 rounded-full">
@@ -213,10 +213,10 @@ export default function EventsPage() {
           transition={{ duration: 0.6 }}
           className="mb-12"
         >
-          <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
             Events<span className="text-blue-600">.</span>
           </h1>
-          <p className="mt-4 text-gray-500 text-lg max-w-xl">
+          <p className="mt-2 sm:mt-4 text-gray-500 text-sm sm:text-base md:text-lg max-w-xl">
             Workshops, hackathons, study jams &amp; more — all crafted to level
             up your developer journey.
           </p>

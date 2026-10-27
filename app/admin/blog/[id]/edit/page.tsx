@@ -60,7 +60,7 @@ const EMPTY_FORM: PostForm = {
 export default function EditBlogPostPage() {
   const router = useRouter();
   const params = useParams();
-  const postId = params.id as string;
+  const postId = (params?.id as string) || '';
 
   const [form, setForm] = useState<PostForm>(EMPTY_FORM);
   const [isVerifying, setIsVerifying] = useState(true);

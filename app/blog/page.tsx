@@ -118,7 +118,7 @@ function FeaturedCard({ post }: { post: Post }) {
       className="mb-10"
     >
       <Link href={`/blog/${post.id}`} className="group block">
-        <div className="bg-white/60 backdrop-blur-md border border-white/40 rounded-3xl p-8 md:p-10 shadow-sm hover:shadow-xl hover:border-white/70 transition-all duration-300">
+        <div className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-10 shadow-sm hover:shadow-xl hover:border-white/70 transition-all duration-300">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             {/* Left */}
             <div className="flex flex-col gap-4">
@@ -128,7 +128,7 @@ function FeaturedCard({ post }: { post: Post }) {
                 </span>
                 <CategoryBadge category={post.category} />
               </div>
-              <h2 className="font-extrabold text-gray-900 text-2xl md:text-3xl leading-tight group-hover:text-blue-600 transition-colors duration-200">
+              <h2 className="font-extrabold text-gray-900 text-xl sm:text-2xl md:text-3xl leading-tight group-hover:text-blue-600 transition-colors duration-200">
                 {post.title}
               </h2>
               <p className="text-gray-500 leading-relaxed">{post.excerpt}</p>
@@ -215,10 +215,10 @@ export default function BlogPage() {
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-gray-900 mb-3 sm:mb-4">
             GDGOC <span className="text-blue-600">Blog</span>
           </h1>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
+          <p className="text-gray-500 text-sm sm:text-base md:text-lg max-w-xl mx-auto">
             Tutorials, event recaps, and insights from the GDGOC UNIBEN community.
           </p>
         </motion.div>

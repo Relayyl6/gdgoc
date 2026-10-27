@@ -122,14 +122,14 @@ function RoleCard({ role, onApply }: { role: VolunteerRole; onApply: (id: string
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.45 }}
-      className="bg-white/60 backdrop-blur-md border border-white/40 rounded-3xl p-8 flex flex-col gap-5 shadow-sm hover:shadow-lg transition-shadow"
+      className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-5 sm:p-7 flex flex-col gap-4 sm:gap-5 shadow-sm hover:shadow-lg transition-shadow"
     >
-      <div className={`${role.color} w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center`}>
+      <div className={`${role.color} w-11 h-11 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gray-50 flex items-center justify-center`}>
         {role.icon}
       </div>
 
       <div>
-        <h3 className="text-xl font-bold mb-2">{role.title}</h3>
+        <h3 className="text-lg sm:text-xl font-bold mb-1.5">{role.title}</h3>
         <p className="text-gray-500 text-sm leading-relaxed">{role.description}</p>
       </div>
 
@@ -215,23 +215,23 @@ export default function JoinPage() {
 
   return (
     <div
-      className="min-h-screen bg-white text-black pt-32 pb-24"
+      className="min-h-screen bg-white text-black pt-24 sm:pt-32 pb-16 sm:pb-24"
       style={{ fontFamily: "'Google Sans', sans-serif" }}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
 
         {/* ── Hero + How to Join ───────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center mb-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 lg:gap-24 items-center mb-16 sm:mb-24 md:mb-32">
           <motion.div
             initial={{ opacity: 0, x: -32 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-6">Join Us.</h1>
-            <p className="text-2xl text-gray-500 mb-8 leading-relaxed">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-bold tracking-tight mb-4 sm:mb-6">Join Us.</h1>
+            <p className="text-base sm:text-lg md:text-2xl text-gray-500 mb-6 sm:mb-8 leading-relaxed">
               No experience required. Just passion. Open to all UNIBEN students across all academic backgrounds.
             </p>
-            <div className="inline-flex items-center gap-2 bg-green-50 text-green-600 px-6 py-3 rounded-full font-bold mb-12 border border-green-100">
+            <div className="inline-flex items-center gap-2 bg-green-50 text-green-600 px-4 py-2 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-bold mb-8 sm:mb-12 border border-green-100">
               <CheckCircle2 size={20} /> Membership is 100% Free
             </div>
 
@@ -239,7 +239,7 @@ export default function JoinPage() {
               href="https://gdg.community.dev/gdg-on-campus-university-of-benin-benin-nigeria/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between w-full md:w-max gap-8 bg-blue-600 text-white px-8 py-5 rounded-full text-lg font-bold hover:bg-blue-700 transition-all hover:shadow-xl group"
+              className="flex items-center justify-between w-full md:w-max gap-8 bg-blue-600 text-white px-6 py-3.5 sm:px-8 sm:py-4 rounded-full text-sm sm:text-base font-bold hover:bg-blue-700 transition-all hover:shadow-xl group"
             >
               Join GDG Platform <ArrowRight className="group-hover:translate-x-2 transition-transform" />
             </a>
@@ -249,9 +249,9 @@ export default function JoinPage() {
             initial={{ opacity: 0, x: 32 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="bg-gray-50 p-8 md:p-10 rounded-[2.5rem] border border-gray-100 relative overflow-hidden"
+            className="bg-gray-50 p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-[2.5rem] border border-gray-100 relative overflow-hidden"
           >
-            <h3 className="text-3xl font-bold mb-8">How to Join</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">How to Join</h3>
             <div className="space-y-6 relative">
               <div className="absolute left-[15px] top-4 bottom-4 w-px bg-gray-200" />
               {steps.map((step, idx) => (
@@ -260,7 +260,7 @@ export default function JoinPage() {
                     {idx + 1}
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold mb-2">{step.title}</h4>
+                    <h4 className="text-lg sm:text-xl font-bold mb-1.5">{step.title}</h4>
                     <p className="text-gray-500 mb-3">{step.desc}</p>
                     {step.link && (
                       <a href={step.link} target={step.link.startsWith('http') ? '_blank' : '_self'} rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
@@ -280,9 +280,9 @@ export default function JoinPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="bg-white/40 backdrop-blur-md p-10 md:p-16 rounded-[3rem] border border-gray-200 shadow-sm text-center max-w-4xl mx-auto mb-32"
+          className="bg-white/40 backdrop-blur-md p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-[2.5rem] border border-gray-200 shadow-sm text-center max-w-4xl mx-auto mb-16 sm:mb-24 md:mb-32"
         >
-          <ShieldCheck className="w-16 h-16 text-green-500 mx-auto mb-6" />
+          <ShieldCheck className="w-10 h-10 sm:w-14 sm:h-14 text-green-500 mx-auto mb-4 sm:mb-6" />
           <h2 className="text-3xl font-bold mb-4">Code of Conduct</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             Our community is dedicated to providing a harassment-free and inclusive experience for everyone. We expect all
@@ -303,10 +303,10 @@ export default function JoinPage() {
             transition={{ duration: 0.5 }}
             className="text-center mb-16"
           >
-            <h2 className="text-5xl md:text-7xl font-bold tracking-tight mb-5">
+            <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold tracking-tight mb-4">
               Volunteer with<br />GDGOC UNIBEN.
             </h2>
-            <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base md:text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
               Use your skills to power the community. We need passionate people for various roles.
             </p>
           </motion.div>
@@ -325,7 +325,7 @@ export default function JoinPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="bg-white/60 backdrop-blur-md border border-white/40 rounded-[2.5rem] p-10 md:p-14 shadow-sm"
+              className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-sm"
             >
               <h3 className="text-3xl font-bold mb-2">Volunteer Application</h3>
               <p className="text-gray-500 mb-10">

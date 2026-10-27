@@ -240,7 +240,7 @@ export default function EventDetailPage({
         <div
           className={`relative overflow-hidden rounded-3xl mb-10 shadow-xl ${
             !event.image
-              ? `bg-gradient-to-br ${event.coverGradient} p-8 md:p-12`
+              ? `bg-gradient-to-br ${event.coverGradient} p-5 sm:p-8 md:p-12`
               : "bg-gray-900 flex flex-col md:flex-row"
           }`}
         >
@@ -256,11 +256,11 @@ export default function EventDetailPage({
               </div>
 
               {/* Right Column: Text */}
-              <div className="p-8 md:p-12 flex-1 relative flex flex-col justify-center bg-gray-900">
+              <div className="p-5 sm:p-8 md:p-12 flex-1 relative flex flex-col justify-center bg-gray-900">
                 <span className="inline-block bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full mb-4 border border-white/20 w-fit">
                   {event.type}
                 </span>
-                <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-md">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3 sm:mb-4 drop-shadow-md">
                   {event.title}
                 </h1>
                 <div className="flex flex-wrap gap-4 text-white/90 text-sm drop-shadow-sm font-medium">
@@ -288,7 +288,7 @@ export default function EventDetailPage({
               <span className="inline-block bg-white/20 backdrop-blur text-white text-xs font-bold px-3 py-1 rounded-full mb-4 border border-white/20">
                 {event.type}
               </span>
-              <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-4 drop-shadow-md">
+              <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3 sm:mb-4 drop-shadow-md">
                 {event.title}
               </h1>
               <div className="flex flex-wrap gap-4 text-white/90 text-sm drop-shadow-sm font-medium">

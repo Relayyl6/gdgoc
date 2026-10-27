@@ -82,19 +82,19 @@ export default function RegisterPage({ params }: { params: { id: string } }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-24">
-      <div className="max-w-3xl mx-auto px-6">
+    <div className="min-h-screen bg-slate-50 pt-20 sm:pt-24 pb-16 sm:pb-24">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
         <Link href={`/events/${event.id}`} className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-8 font-semibold transition">
           <ArrowLeft className="w-4 h-4" /> Back to Event
         </Link>
         
         <div className="mb-10">
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Join as {activeTab === 'speaker' ? 'Speaker' : 'Trainee'}</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Join as {activeTab === 'speaker' ? 'Speaker' : 'Trainee'}</h1>
           <p className="text-gray-500">{event.title}</p>
         </div>
 
         {!ticketGenerated ? (
-          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm border border-gray-100">
             <div className="flex bg-gray-100 p-1.5 rounded-2xl mb-8">
               <button type="button" onClick={() => setActiveTab('speaker')} className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm transition ${activeTab === 'speaker' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-gray-900'}`}>
                 <Mic className="w-4 h-4" /> Speaker
@@ -130,11 +130,11 @@ export default function RegisterPage({ params }: { params: { id: string } }) {
             </form>
           </div>
         ) : (
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 text-center">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm border border-gray-100 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 text-green-600 mb-6">
               <CheckCircle className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Pass Generated!</h2>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-2">Pass Generated!</h2>
             <p className="text-gray-500 mb-8 max-w-sm mx-auto">
               Please download your pass. You will need to show this pass in the WhatsApp group to verify your role.
             </p>

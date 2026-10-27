@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-white text-gray-900 pt-24 pb-16 px-6 md:px-12">
+    <div className="min-h-screen bg-white text-gray-900 pt-20 sm:pt-24 pb-12 sm:pb-16 px-4 sm:px-6 md:px-12">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-8">Privacy Policy</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight mb-6">Privacy Policy</h1>
         
         <div className="prose prose-lg text-gray-700">
           <p>
