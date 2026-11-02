@@ -124,6 +124,13 @@ const FILTERS: Division[] = ['All', 'Technical', 'Design', 'Content', 'Outreach'
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
+function getInitials(name: string) {
+  if (!name) return '';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
 function SocialLinks({
   github,
   linkedin,
@@ -159,6 +166,14 @@ function SocialLinks({
 }
 
 function LeaderCard({ leader }: { leader: Leader }) {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [leader.photoUrl]);
+
+  const showInitials = !leader.photoUrl || imgError;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -169,10 +184,19 @@ function LeaderCard({ leader }: { leader: Leader }) {
     >
       {/* Avatar */}
       <div className="shrink-0">
-        <div className={`w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full bg-gradient-to-br ${leader.gradient} shadow-md overflow-hidden`}>
-          {leader.photoUrl && (
+        <div className={`w-24 h-24 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full bg-gradient-to-br ${leader.gradient} shadow-md overflow-hidden relative flex items-center justify-center`}>
+          {!showInitials ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={leader.photoUrl} alt={leader.name} className="w-full h-full object-cover" />
+            <img
+              src={leader.photoUrl}
+              alt={leader.name}
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="font-extrabold text-white tracking-wider text-2xl sm:text-3xl md:text-4xl select-none drop-shadow-sm">
+              {getInitials(leader.name)}
+            </span>
           )}
         </div>
       </div>
@@ -195,6 +219,14 @@ function LeaderCard({ leader }: { leader: Leader }) {
 }
 
 function MemberCard({ member, index }: { member: Member; index: number }) {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [member.photoUrl]);
+
+  const showInitials = !member.photoUrl || imgError;
+
   return (
     <motion.div
       layout
@@ -206,15 +238,24 @@ function MemberCard({ member, index }: { member: Member; index: number }) {
       tabIndex={0}
     >
       {/* Photo */}
-      <div className="relative w-full aspect-square rounded-xl sm:rounded-2xl overflow-hidden mb-2.5 sm:mb-3 bg-gray-100 shadow-sm">
+      <div className="relative w-full aspect-square rounded-xl sm:rounded-2xl overflow-hidden mb-2.5 sm:mb-3 bg-gray-100 shadow-sm flex items-center justify-center">
         <div
-          className={`absolute inset-0 bg-gradient-to-br ${member.gradient} transition-all duration-500 ${member.photoUrl ? 'opacity-0' : 'grayscale group-hover:grayscale-0 group-focus:grayscale-0'}`}
+          className={`absolute inset-0 bg-gradient-to-br ${member.gradient} transition-all duration-500`}
         />
-        {member.photoUrl && (
+        {!showInitials ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={member.photoUrl} alt={member.name} className="absolute inset-0 w-full h-full object-cover" />
+          <img
+            src={member.photoUrl}
+            alt={member.name}
+            onError={() => setImgError(true)}
+            className="absolute inset-0 w-full h-full object-cover z-10"
+          />
+        ) : (
+          <span className="relative z-10 font-extrabold text-white tracking-wider text-2xl sm:text-3xl md:text-4xl select-none drop-shadow-sm">
+            {getInitials(member.name)}
+          </span>
         )}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus:opacity-100 focus-within:opacity-100 active:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2.5">
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 group-focus:opacity-100 focus-within:opacity-100 active:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2.5 z-20">
           {member.github && (
             <a
               href={member.github}

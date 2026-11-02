@@ -18,6 +18,39 @@ import {
   ImagePlus,
 } from 'lucide-react';
 
+function getInitials(name: string) {
+  if (!name) return '';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function TeamAvatar({ photoUrl, name }: { photoUrl?: string; name: string }) {
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [photoUrl]);
+
+  if (photoUrl && !imgError) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={photoUrl}
+        alt={name}
+        onError={() => setImgError(true)}
+        className="w-full h-full object-cover"
+      />
+    );
+  }
+
+  return (
+    <span className="font-bold text-white text-sm select-none">
+      {getInitials(name)}
+    </span>
+  );
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Division = 'Leadership' | 'Technical' | 'Design' | 'Content' | 'Outreach';
@@ -513,15 +546,8 @@ export default function AdminTeamPage() {
                     className="flex items-center gap-5 px-8 py-5 hover:bg-gray-50/60 transition-colors group"
                   >
                     {/* Thumbnail */}
-                    <div className="shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
-                      {member.photoUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={member.photoUrl}
-                          alt={member.name}
-                          className="w-full h-full object-cover"
-                        />
-                      )}
+                    <div className="shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center overflow-hidden shadow-sm">
+                      <TeamAvatar photoUrl={member.photoUrl} name={member.name} />
                     </div>
 
                     {/* Details */}
